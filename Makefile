@@ -1,0 +1,58 @@
+BINARY = YAopenvfD
+DIR_INCLUDE = include
+DIR_SOURCE = src
+DIR_OBJECT = obj
+CC ?= gcc
+STRIP ?= strip
+CFLAGS = -I$(DIR_INCLUDE) -Wall -Wextra
+STATIC ?= 0
+DEBUG ?= 0
+ifeq ($(DEBUG), 1)
+	CFLAGS += -g
+endif
+ifeq ($(STATIC), 1)
+	LDFLAGS += -static
+endif
+
+INCLUDES = $(wildcard $(DIR_INCLUDE)/*.h) $(wildcard $(DIR_INCLUDE)/openvfd/*.h)
+
+_OBJECTS = $(wildcard $(DIR_SOURCE)/*.c)
+OBJECTS = $(patsubst $(DIR_SOURCE)/%.c,$(DIR_OBJECT)/%.o,$(_OBJECTS))
+
+ifdef VERSION_CUSTOM
+	CLI_VERSION := $(VERSION_CUSTOM)
+else
+	VERSION_GIT_TAG := $(shell git describe --abbrev=0 --tags ${TAG_COMMIT} 2>/dev/null || true)
+	VERSION_GIT_TAG_NO_V := $(VERSION_GIT_TAG:v%=%)
+	VERSION_GIT_COMMIT := $(shell git rev-list --abbrev-commit --tags --max-count=1)
+	VERSION_GIT_DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
+	CLI_VERSION := $(VERSION_GIT_TAG_NO_V)-$(VERSION_GIT_COMMIT)-$(VERSION_GIT_DATE)
+	GIT_STAT := $(shell git diff --stat)
+	ifeq ($(CLI_VERSION),--)
+		CLI_VERSION := unknown
+	endif
+	ifneq ($(GIT_STAT),)
+		CLI_VERSION := $(CLI_VERSION)-DIRTY
+	endif
+endif
+
+ifeq ($(CLI_VERSION),)
+	CLI_VERSION := unknown
+endif
+
+$(BINARY): $(OBJECTS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+ifneq ($(DEBUG), 1)
+	$(STRIP) $(BINARY)
+endif
+
+$(DIR_OBJECT)/cli.o: $(DIR_SOURCE)/cli.c $(INCLUDES)
+	$(CC) -c -o $@ $< $(CFLAGS) -DCLI_VERSION=\"$(CLI_VERSION)\"
+
+$(DIR_OBJECT)/%.o: $(DIR_SOURCE)/%.c $(INCLUDES)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+.PHONY: clean
+
+clean:
+	rm -f $(DIR_OBJECT)/*.o $(BINARY)
