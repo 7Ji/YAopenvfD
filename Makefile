@@ -8,7 +8,7 @@ CFLAGS = -I$(DIR_INCLUDE) -Wall -Wextra
 STATIC ?= 0
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
-	CFLAGS += -g
+	CFLAGS += -g -DDEBUGGING
 endif
 ifeq ($(STATIC), 1)
 	LDFLAGS += -static
