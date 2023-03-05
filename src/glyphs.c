@@ -1,7 +1,7 @@
 #include "glyphs.h"
 
 
-#define GLYPHS_BIT(x) 0b00000001 << ( x - 1 )
+// #define GLYPHS_BIT(x) 0b00000001 << ( x - 1 )
 
 
 /*
@@ -20,14 +20,14 @@
  *  b/02 |        | f/20
  *       +--a/01--+      
  */
-#define GLYPHS_0_A  GLYPHS_BIT(1)
-#define GLYPHS_0_B  GLYPHS_BIT(2)
-#define GLYPHS_0_C  GLYPHS_BIT(3)
-#define GLYPHS_0_D  GLYPHS_BIT(4)
-#define GLYPHS_0_E  GLYPHS_BIT(5)
-#define GLYPHS_0_F  GLYPHS_BIT(6)
-#define GLYPHS_0_G  GLYPHS_BIT(7)
-#define GLYPHS_0_P  GLYPHS_BIT(8)
+#define GLYPHS_0_A  0b00000001
+#define GLYPHS_0_B  0b00000010
+#define GLYPHS_0_C  0b00000100
+#define GLYPHS_0_D  0b00001000
+#define GLYPHS_0_E  0b00010000
+#define GLYPHS_0_F  0b00100000
+#define GLYPHS_0_G  0b01000000
+#define GLYPHS_0_P  0b10000000
 /*=============================*/
 /* dp
  *       +--d/01--+
@@ -38,14 +38,14 @@
  *  b/10 |        | f/04
  *       +--a/08--+      
  */
-#define GLYPHS_1_A  GLYPHS_BIT(4)
-#define GLYPHS_1_B  GLYPHS_BIT(5)
-#define GLYPHS_1_C  GLYPHS_BIT(6)
-#define GLYPHS_1_D  GLYPHS_BIT(1)
-#define GLYPHS_1_E  GLYPHS_BIT(2)
-#define GLYPHS_1_F  GLYPHS_BIT(3)
-#define GLYPHS_1_G  GLYPHS_BIT(7)
-#define GLYPHS_1_P  GLYPHS_BIT(8)
+#define GLYPHS_1_A  0b00001000
+#define GLYPHS_1_B  0b00010000
+#define GLYPHS_1_C  0b00100000
+#define GLYPHS_1_D  0b00000001
+#define GLYPHS_1_E  0b00000010
+#define GLYPHS_1_F  0b00000100
+#define GLYPHS_1_G  0b01000000
+#define GLYPHS_1_P  0b10000000
 /*=============================*/
 /* dp
  *       +--d/02--+
@@ -56,14 +56,14 @@
  *  b/08 |        | f/04
  *       +--a/01--+
  */
-#define GLYPHS_2_A  GLYPHS_BIT(1)
-#define GLYPHS_2_B  GLYPHS_BIT(4)
-#define GLYPHS_2_C  GLYPHS_BIT(6)
-#define GLYPHS_2_D  GLYPHS_BIT(2)
-#define GLYPHS_2_E  GLYPHS_BIT(5)
-#define GLYPHS_2_F  GLYPHS_BIT(3)
-#define GLYPHS_2_G  GLYPHS_BIT(7)
-#define GLYPHS_2_P  GLYPHS_BIT(8)
+#define GLYPHS_2_A  0b00000001
+#define GLYPHS_2_B  0b00001000
+#define GLYPHS_2_C  0b00100000
+#define GLYPHS_2_D  0b00000010
+#define GLYPHS_2_E  0b00010000
+#define GLYPHS_2_F  0b00000100
+#define GLYPHS_2_G  0b01000000
+#define GLYPHS_2_P  0b10000000
 /*=============================*/
 /*  dp
  *       +--d/01--+
@@ -74,14 +74,14 @@
  *  b/02 |        | f/10
  *       +--a/04--+.p/08
 */
-#define GLYPHS_3_A  GLYPHS_BIT(3)
-#define GLYPHS_3_B  GLYPHS_BIT(2)
-#define GLYPHS_3_C  GLYPHS_BIT(8)
-#define GLYPHS_3_D  GLYPHS_BIT(1)
-#define GLYPHS_3_E  GLYPHS_BIT(7)
-#define GLYPHS_3_F  GLYPHS_BIT(5)
-#define GLYPHS_3_G  GLYPHS_BIT(6)
-#define GLYPHS_3_P  GLYPHS_BIT(4)
+#define GLYPHS_3_A  0b00000100
+#define GLYPHS_3_B  0b00000010
+#define GLYPHS_3_C  0b10000000
+#define GLYPHS_3_D  0b00000001
+#define GLYPHS_3_E  0b01000000
+#define GLYPHS_3_F  0b00010000
+#define GLYPHS_3_G  0b00100000
+#define GLYPHS_3_P  0b00001000
 /*=============================*/
 /*  dp
  *       +--d/01--+
@@ -92,14 +92,14 @@
  *  b/20 |        | f/04
  *       +--a/40--+
  */
-#define GLYPHS_4_A  GLYPHS_BIT(7)
-#define GLYPHS_4_B  GLYPHS_BIT(6)
-#define GLYPHS_4_C  GLYPHS_BIT(5)
-#define GLYPHS_4_D  GLYPHS_BIT(1)
-#define GLYPHS_4_E  GLYPHS_BIT(2)
-#define GLYPHS_4_F  GLYPHS_BIT(3)
-#define GLYPHS_4_G  GLYPHS_BIT(4)
-#define GLYPHS_4_P  GLYPHS_BIT(8)
+#define GLYPHS_4_A  0b01000000
+#define GLYPHS_4_B  0b00100000
+#define GLYPHS_4_C  0b00010000
+#define GLYPHS_4_D  0b00000001
+#define GLYPHS_4_E  0b00000010
+#define GLYPHS_4_F  0b00000100
+#define GLYPHS_4_G  0b00001000
+#define GLYPHS_4_P  0b10000000
 /*=============================*/
 
 #define GLYPHS_CHAR_0(X)    GLYPHS_BOTTOM(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_LEFT_UP(X) | GLYPHS_TOP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_RIGHT_DOWN(X)
@@ -144,7 +144,6 @@
                             GLYPHS_BOTTOM(X)
 #define GLYPHS_CHAR_DEGREE(X) \
                             GLYPHS_LEFT_UP(X) | GLYPHS_TOP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_MIDDLE(X)
-
 
 #define GLYPHS_SETUP(X) \
     { \
@@ -238,7 +237,7 @@
         /* ASCII 250-255 */ 0, 0, 0, 0, 0, 0 \
     }
 
-static const uint8_t glyphs_ascii_lookup_table[][256] = {
+const uint8_t glyphs_lookup_table[][256] = {
     GLYPHS_SETUP(0),
     GLYPHS_SETUP(1),
     GLYPHS_SETUP(2),
@@ -246,55 +245,70 @@ static const uint8_t glyphs_ascii_lookup_table[][256] = {
     GLYPHS_SETUP(4)
 };
 
-// void glyphs_debugging() {
-//     // for (unsigned short i = 0; i < 5; ++i) {
-//         uint8_t const *const table = glyphs_ascii_lookup_table[0];
-//         for (uint8_t c = 0;; ++c) {
-//             uint8_t glyph = table[c];
-//             printf("character %hu (%c):\n", c, c);
-//             if (glyph & GLYPHS_TOP(0)) {
-//                 printf("   -  \n");
-//             } else {
-//                 printf("\n");
-//             }
-//             if (glyph & GLYPHS_LEFT_UP(0)) {
-//                 printf(" |   ");
-//             } else {
-//                 printf("     ");
-//             }
-//             if (glyph & GLYPHS_RIGHT_UP(0)) {
-//                 printf("|\n");
-//             } else {
-//                 printf("\n");
-//             }
-//             if (glyph & GLYPHS_MIDDLE(0)) {
-//                 printf("   -\n");
-//             } else {
-//                 printf("\n");
-//             }
-//             if (glyph & GLYPHS_LEFT_DOWN(0)) {
-//                 printf(" |   ");
-//             } else {
-//                 printf("     ");
-//             }
-//             if (glyph & GLYPHS_RIGHT_DOWN(0)) {
-//                 printf("|\n");
-//             } else {
-//                 printf("\n");
-//             }
-//             if (glyph & GLYPHS_BOTTOM(0)) {
-//                 printf("   -  ");
-//             } else {
-//                 printf("      ");
-//             }
-//             if (glyph & GLYPHS_POINT(0)) {
-//                 printf(".\n");
-//             } else {
-//                 printf("\n");
-//             }
-//             if (c == 0xffU) {
-//                 break;
-//             }
-//         }
-//     // }
-// }
+// static const unsigned short 
+//     glyphs_ascii_lookup_table_len = 
+//         sizeof glyphs_ascii_lookup_table / 
+//             sizeof glyphs_ascii_lookup_table[0];
+
+// uint8_t glyphs_lookup_char(char const character, unsigned short table_id) {
+//     if (table_id >= glyphs_ascii_lookup_table_len) {
+//         pr_warn("Looking up character 0x%hx(%c) in non-existing table %hu\n", character, character, table_id);
+//         return 0;
+//     }
+//     return glyphs_ascii_lookup_table[table_id][(uint8_t)character];
+// };
+
+/*
+void glyphs_debugging() {
+    // for (unsigned short i = 0; i < 5; ++i) {
+        uint8_t const *const table = glyphs_ascii_lookup_table[0];
+        for (uint8_t c = 0;; ++c) {
+            uint8_t glyph = table[c];
+            printf("character %hu (%c):\n", c, c);
+            if (glyph & GLYPHS_TOP(0)) {
+                printf("   -  \n");
+            } else {
+                printf("\n");
+            }
+            if (glyph & GLYPHS_LEFT_UP(0)) {
+                printf(" |   ");
+            } else {
+                printf("     ");
+            }
+            if (glyph & GLYPHS_RIGHT_UP(0)) {
+                printf("|\n");
+            } else {
+                printf("\n");
+            }
+            if (glyph & GLYPHS_MIDDLE(0)) {
+                printf("   -\n");
+            } else {
+                printf("\n");
+            }
+            if (glyph & GLYPHS_LEFT_DOWN(0)) {
+                printf(" |   ");
+            } else {
+                printf("     ");
+            }
+            if (glyph & GLYPHS_RIGHT_DOWN(0)) {
+                printf("|\n");
+            } else {
+                printf("\n");
+            }
+            if (glyph & GLYPHS_BOTTOM(0)) {
+                printf("   -  ");
+            } else {
+                printf("      ");
+            }
+            if (glyph & GLYPHS_POINT(0)) {
+                printf(".\n");
+            } else {
+                printf("\n");
+            }
+            if (c == 0xffU) {
+                break;
+            }
+        }
+    // }
+}
+*/

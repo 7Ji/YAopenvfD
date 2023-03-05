@@ -11,6 +11,7 @@
 #define GLYPHS_MIDDLE(X)    GLYPHS_ ## X ## _G
 #define GLYPHS_POINT(X)     GLYPHS_ ## X ## _P
 
-
+extern const uint8_t glyphs_lookup_table[][256];
+// uint8_t glyphs_lookup_char(char const character, unsigned short table_id);
 
 #endif

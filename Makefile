@@ -1,4 +1,6 @@
-BINARY = YAopenvfD
+BINARY_DAEMON = YAopenvfD
+BINARY_GLYPH_TEST = glyph_test
+BINARY ?= $(BINARY_DAEMON)
 DIR_INCLUDE = include
 DIR_SOURCE = src
 DIR_OBJECT = obj
@@ -16,43 +18,63 @@ endif
 
 INCLUDES = $(wildcard $(DIR_INCLUDE)/*.h) $(wildcard $(DIR_INCLUDE)/openvfd/*.h)
 
+# OBJECTS_COMMON := main glyphs
+# OBJECTS_DAEMON_ONLY := cli collector openvfd util
+
+# OBJECTS_DAEMON := $(patsubst %,$(DIR_OBJECT)/%.daemon.o,$(OBJECTS_COMMON) $(OBJECTS_DAEMON_ONLY))
+
+# OBJECTS_GLYPHS_TEST := $(patsubst %,$(DIR_OBJECT)/%.glyph_test.o,$(OBJECTS_COMMON))
+
 _OBJECTS = $(wildcard $(DIR_SOURCE)/*.c)
 OBJECTS = $(patsubst $(DIR_SOURCE)/%.c,$(DIR_OBJECT)/%.o,$(_OBJECTS))
 
-ifdef VERSION_CUSTOM
-	CLI_VERSION := $(VERSION_CUSTOM)
-else
+ifndef VERSION
 	VERSION_GIT_TAG := $(shell git describe --abbrev=0 --tags ${TAG_COMMIT} 2>/dev/null || true)
 	VERSION_GIT_TAG_NO_V := $(VERSION_GIT_TAG:v%=%)
 	VERSION_GIT_COMMIT := $(shell git rev-list --abbrev-commit --tags --max-count=1)
 	VERSION_GIT_DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
-	CLI_VERSION := $(VERSION_GIT_TAG_NO_V)-$(VERSION_GIT_COMMIT)-$(VERSION_GIT_DATE)
+	VERSION := $(VERSION_GIT_TAG_NO_V)-$(VERSION_GIT_COMMIT)-$(VERSION_GIT_DATE)
 	GIT_STAT := $(shell git diff --stat)
-	ifeq ($(CLI_VERSION),--)
-		CLI_VERSION := unknown
+	ifeq ($(VERSION),--)
+		VERSION := unknown
 	endif
 	ifneq ($(GIT_STAT),)
-		CLI_VERSION := $(CLI_VERSION)-DIRTY
+		VERSION := $(VERSION)-DIRTY
 	endif
 endif
 
-ifeq ($(CLI_VERSION),)
-	CLI_VERSION := unknown
+ifneq ($(BINARY), $(BINARY_GLYPH_TEST))
+	BINARY := $(BINARY_DAEMON)
 endif
 
-$(BINARY): $(OBJECTS)
+.PHONY: clean prepare version fresh
+# glyph_test: $(BINARY_GLYPH_TEST)
+
+# OBJECTS_DAEMON_ONLY
+
+# OBJECTS_GLYPHS_TEST_ONLY
+
+$(BINARY_DAEMON): $(OBJECTS) | version
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 ifneq ($(DEBUG), 1)
-	$(STRIP) $(BINARY)
+	$(STRIP) $(BINARY_DAEMON)
 endif
 
-$(DIR_OBJECT)/cli.o: $(DIR_SOURCE)/cli.c $(INCLUDES)
-	$(CC) -c -o $@ $< $(CFLAGS) -DCLI_VERSION=\"$(CLI_VERSION)\"
+$(DIR_OBJECT)/version.o: $(DIR_SOURCE)/version.c $(INCLUDES) version | prepare
+	$(CC) -c -o $@ $< $(CFLAGS) -DVERSION=\"$(VERSION)\"
 
-$(DIR_OBJECT)/%.o: $(DIR_SOURCE)/%.c $(INCLUDES)
+$(DIR_OBJECT)/main.o: $(DIR_SOURCE)/main.c $(INCLUDES) | prepare
+	$(CC) -c -o $@ $< $(CFLAGS) -DBINARY=YAopenvfD
+
+$(DIR_OBJECT)/%.o: $(DIR_SOURCE)/%.c $(INCLUDES) | prepare
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-.PHONY: clean
+version:
+
+fresh: clean $(BINARY_DAEMON)
 
 clean:
-	rm -f $(DIR_OBJECT)/*.o $(BINARY)
+	rm -rf $(DIR_OBJECT) $(BINARY_DAEMON) $(BINARY_GLYPH_TEST)
+
+prepare:
+	$(shell [[ ! -d $(DIR_OBJECT) ]] && mkdir $(DIR_OBJECT))

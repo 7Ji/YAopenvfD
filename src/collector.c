@@ -4,39 +4,29 @@
 
 #include "util.h"
 
-char const collector_type_strings[][7] = {
-    "string",
-    "temp",
-    "io",
-    "cpu",
-    "net"
-};
-
-
-static inline bool collector_is_type_right(struct collector *collector, enum collector_type type) {
-    if (collector->type == type) {
-        return true;
-    } else {
-        pr_error("collector type not right, expected %u (%s) but got %u (%s)\n", type, collector_type_strings[type], collector->type, collector_type_strings[collector->type]);
-        return false;
+unsigned collector_get_count(struct collector const *const collector_head) {
+    unsigned count = 0;
+    for (struct collector const *collector = collector_head; collector; collector = collector->next) {
+        ++count;
     }
+    return count;
 }
 
-int collector_string(struct collector *collector) {
-    if (!collector_is_type_right(collector, COLLECTOR_TYPE_STRING)) {
+int collector_string(struct collector_string *const collector_head) {
+    unsigned count = collector_get_count((struct collector const *const)collector_head);
+    if (!count) {
+        pr_error("No collector defined\n");
         return -1;
     }
-    // struct collector_definer_string *const definer = collector->definer.string;
-
     return 0;
 }
 
-int collector_temp(struct collector *collector) {
-    if (!collector_is_type_right(collector, COLLECTOR_TYPE_TEMP)) {
+int collector_temp(struct collector_temp *const collector_head) {
+    unsigned count = collector_get_count((struct collector const *const)collector_head);
+    if (!count) {
+        pr_error("No collector defined\n");
         return -1;
     }
-    // struct collector_definer_temp *const definer = collector->definer.temp;
-
     return 0;
 }
 
@@ -49,34 +39,32 @@ enum collector_io_parse_size_type {
 
 #define COLLECTOR_IO_PARSE_SIZE_BUFFER_SIZE 128
 
-static inline void collector_io_parse_size(struct collector *collector, bool is_read, char *start, size_t len) {
+static inline void collector_io_parse_size(struct collector_io *collector, bool is_read, char *start, size_t len) {
     char buffer[COLLECTOR_IO_PARSE_SIZE_BUFFER_SIZE];
     if (len > COLLECTOR_IO_PARSE_SIZE_BUFFER_SIZE - 1) {
         len = COLLECTOR_IO_PARSE_SIZE_BUFFER_SIZE - 1;
     }
     strncpy(buffer, start, len);
     buffer[len] = '\0';
-    size_t size = strtoul(buffer, NULL, 10);
-    size_t size_diff;
-    size_t size_human_readable;
+    size_t const sectors = strtoul(buffer, NULL, 10);
+    size_t const size_diff = (sectors - (is_read ? collector->read_sectors : collector->write_sectors)) * 512;
+#ifdef DEBUGGING
     char suffix;
+    size_t size_human_readable = util_size_to_human_readable(size_diff, &suffix);
+#endif
+    pr_debug("%s speed: %lu%c/s\n", is_read ? "Read" : "Write", size_human_readable, suffix);
     if (is_read) {
-        size_diff = (size - collector->storage.io->read) * 512;
-        size_human_readable = util_size_to_human_readable(size_diff, &suffix);
-        pr_debug("Read speed: %lu%c/s\n", size_human_readable, suffix);
-        collector->storage.io->read = size;
+        collector->read_sectors = sectors;
     } else {
-        size_diff = (size - collector->storage.io->write) * 512;
-        size_human_readable = util_size_to_human_readable(size_diff, &suffix);
-        pr_debug("Write speed: %lu%c/s\n", size_human_readable, suffix);
-        collector->storage.io->write = size;
+        collector->write_sectors = sectors;
     }
 }
 
-static inline void collector_io_parse(struct collector *collector, char *buffer) {
+static inline void collector_io_parse(struct collector_io *collector_head, char *buffer) {
     unsigned short part_id = 0;
     char *part = NULL;
     bool parse_line = false;
+    struct collector_io *collector;
     for (char *c = buffer;; ++c) {
         switch (*c) {
             case ' ':
@@ -96,11 +84,11 @@ static inline void collector_io_parse(struct collector *collector, char *buffer)
                         size_t len = c - part;
                         switch (part_id) {
                             case COLLECTOR_IO_ID_NAME: {
-                                for (struct collector_definer_io *definer = collector->definer.io; definer; definer = definer->next) {
-                                    if (strncmp(definer->blkdev, part, len) || definer->blkdev[len]) {
+                                for (collector = collector_head; collector; collector = collector->next) {
+                                    if (strncmp(collector->blkdev, part, len) || collector->blkdev[len]) {
                                         continue;
                                     }
-                                    pr_debug("Start parsing I/O for block device %s\n", definer->blkdev);
+                                    pr_debug("Start parsing I/O for block device %s\n", collector->blkdev);
                                     parse_line = true;
                                     break;
                                 }
@@ -140,8 +128,10 @@ static inline void collector_io_parse(struct collector *collector, char *buffer)
     }
 }
 
-int collector_io(struct collector *collector) {
-    if (!collector_is_type_right(collector, COLLECTOR_TYPE_IO)) {
+int collector_io(struct collector_io *collector_head) {
+    unsigned count = collector_get_count((struct collector const *const)collector_head);
+    if (!count) {
+        pr_error("No collector defined\n");
         return -1;
     }
     int fd _cleanup_(close_p)= open(COLLECTOR_IO_DISKSTAT, O_RDONLY);
@@ -176,7 +166,7 @@ int collector_io(struct collector *collector) {
                 return 5;
             }
         }
-        collector_io_parse(collector, buffer);
+        collector_io_parse(collector_head, buffer);
         sleep(1);
         if (lseek(fd, 0, SEEK_SET) == -1) {
             pr_error_with_errno("Failed to seek back to beginning of '"COLLECTOR_IO_DISKSTAT"'");
@@ -186,20 +176,21 @@ int collector_io(struct collector *collector) {
     return 0;
 }
 
-int collector_cpu(struct collector *collector) {
-    if (!collector_is_type_right(collector, COLLECTOR_TYPE_CPU)) {
+int collector_cpu(struct collector_cpu *collector_head) {
+    unsigned count = collector_get_count((struct collector const *const)collector_head);
+    if (!count) {
+        pr_error("No collector defined\n");
         return -1;
     }
-    // struct collector_definer_cpu *const definer = collector->definer.cpu;
-
     return 0;
 }
 
-int collector_net(struct collector *collector) {
-    if (!collector_is_type_right(collector, COLLECTOR_TYPE_NET)) {
+int collector_net(struct collector_net *collector_head) {
+    unsigned count = collector_get_count((struct collector const *const)collector_head);
+    if (!count) {
+        pr_error("No collector defined\n");
         return -1;
     }
-    // struct collector_definer_net *const definer = collector->definer.net;
     return 0;
 }
 
