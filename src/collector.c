@@ -88,13 +88,10 @@ int collector_temp_report(struct collector_temp *const collector, char report[5]
     if (temp >= 1000000) {
         strcpy(report, "xxxx");
     } else if (temp >= 100000) {
-        snprintf(report, 5, "%luC", temp / 1000);
-    } else if (temp >= 10000) {
-        snprintf(report, 5, "%lu C", temp / 1000);
-        report[2] = 0xb0;
+        snprintf(report, 5, "%3luC", temp / 1000);
     } else {
-        snprintf(report, 4, "%lu C", temp / 1000);
-        report[1] = 0xb0;
+        snprintf(report, 5, "%2lu C", temp / 1000);
+        report[2] = 0xb0;
     }
     return 0;
 }
@@ -149,6 +146,8 @@ int collector_io_parse(struct collector_io *const collector) {
         pr_error("Stat file for block device '%s' is empty\n", collector->blkdev);
         return 3;
     }
+    // collector->read_sectors_this = 0;
+    // collector->write_sectors_this = 0;
     uint8_t *part = NULL;
     uint8_t part_id = 0;
     for (uint8_t *byte = buffer;; ++byte) {
@@ -160,19 +159,17 @@ int collector_io_parse(struct collector_io *const collector) {
                 switch (part_id) {
                 case COLLECTOR_IO_PART_ID_READ_SECTORS:
                 case COLLECTOR_IO_PART_ID_WRITE_SECTORS: {
-                    uint8_t temp[COLLECTOR_IO_TEMP_SIZE];
+                    // uint8_t temp[COLLECTOR_IO_TEMP_SIZE];
                     if ((len = byte - part) > COLLECTOR_IO_TEMP_SIZE) {
                         pr_error("Part of stat for block device '%s' is too long, %lu bytes exceeds temp size %d\n", collector->blkdev, len, COLLECTOR_IO_TEMP_SIZE);
                         return 4;
                     }
-                    strncpy((char *)temp, (char *)part, len);
-                    temp[len] = '\0';
-                    size_t const sectors = strtoul((char *)temp, NULL, 10);
+                    // strncpy((char *)temp, (char *)part, len);
+                    // temp[len] = '\0';
+                    size_t const sectors = strtoul((char *)part, NULL, 10);
                     if (part_id == COLLECTOR_IO_PART_ID_READ_SECTORS) {
-                        collector->read_sectors_last = collector->read_sectors_this;
                         collector->read_sectors_this = sectors;
                     } else {
-                        collector->write_sectors_last = collector->write_sectors_this;
                         collector->write_sectors_this = sectors;
                         return 0;
                     }
@@ -196,8 +193,6 @@ int collector_io_parse(struct collector_io *const collector) {
 }
 
 static inline int collector_io_prepare(struct collector_io *const collector) {
-    collector->read_sectors_this = 0;
-    collector->write_sectors_this = 0;
     if (collector_io_parse(collector)) {
         pr_error("Failed to prepare collector for IO for block device '%s'\n", collector->blkdev);
         return 1;
@@ -206,8 +201,9 @@ static inline int collector_io_prepare(struct collector_io *const collector) {
 }
 
 static inline int collector_io_report(struct collector_io *const collector, char report[5]) {
-    int r = collector_io_parse(collector);
-    if (r) {
+    collector->read_sectors_last = collector->read_sectors_this;
+    collector->write_sectors_last = collector->write_sectors_this;
+    if (collector_io_parse(collector)) {
         pr_error("Failed to parse block device stat for '%s' for report\n", collector->blkdev);
         return 1;
     }
@@ -235,9 +231,13 @@ static inline int collector_io_report(struct collector_io *const collector, char
 int collector_cpu_safe_read(struct collector_cpu *const collector) {
     ssize_t size = 0;
     for (;;) {
+        if (lseek(collector->stat_fd, 0, SEEK_SET) < 0) {
+            pr_error_with_errno("Failed to seek in '"COLLECTOR_CPU_PROC_STAT"'");
+            return 1;
+        }
         if ((size = read(collector->stat_fd, collector->buffer, collector->alloc)) < 0) {
             pr_error_with_errno("Failed to read %lu bytes from '"COLLECTOR_CPU_PROC_STAT"'", collector->alloc);
-            return 1;
+            return 2;
         }
         if (collector->alloc > (size_t)size) {
             return 0;
@@ -247,7 +247,7 @@ int collector_cpu_safe_read(struct collector_cpu *const collector) {
             collector->buffer = buffer;
         } else {
             pr_error_with_errno("Failed to re-allocate memory for CPU stat");
-            return 2;
+            return 3;
         }
     }
 }
@@ -275,7 +275,7 @@ int collector_cpu_init(struct collector_cpu *const collector) {
         switch (*c) {
         case ' ':
             if (head) {
-                if (!strncmp(line, collector->label, c - line + 1)) {
+                if (!strncmp(line, collector->label, c - line + 1)) { // Plus one to also contain space
                     return 0;
                 }
                 head = false;
@@ -294,6 +294,95 @@ int collector_cpu_init(struct collector_cpu *const collector) {
     }
 }
 
+int collector_cpu_parse(struct collector_cpu *const collector) {
+    if (collector_cpu_safe_read(collector)) {
+        return 1;
+    }
+    collector->idle_this = 0;
+    collector->busy_this = 0;
+    bool parse_line = true;
+    char *part = NULL;
+    unsigned part_id = 0;
+    for (char *c = collector->buffer;; ++c) {
+        switch (*c) {
+        case '\0':
+            pr_error("Failed to find line for cpu stat for '%s'\n", collector->label);
+            return 1;
+        case ' ':
+        case '\n':
+            if (parse_line) {
+                switch (part_id) {
+                    case 1: /* cpu */
+                        if (strncmp(part, collector->label, c - part + 1)) {
+                            parse_line = false;
+                        }
+                        break;
+                    case 2: /* user */
+                    case 3: /* nice */
+                    case 4: /* system */
+                    case 10: /* guest */
+                    case 11: /* guest_nice */
+                        collector->busy_this += strtoul(part, NULL, 10);
+                        break;
+                    case 5: /* idle */
+                    case 6: /* iowait */
+                    case 7: /* irq */
+                    case 8: /* softirq */
+                    case 9: /* steal */
+                        collector->idle_this += strtoul(part, NULL, 10);
+                        break;
+                    default:
+                        pr_error("Unexpected line part id: %u\n", part_id);
+                        return 2;
+                }
+                if (*c == '\n' || part_id == 11) {
+                    return 0;
+                }
+            }
+            part = NULL;
+            if (*c == '\n') {
+                parse_line = true;
+                part_id = 0;
+            }
+            break;
+        default:
+            if (parse_line && !part) {
+                part = c;
+                ++part_id;
+            }
+            break;
+        }
+    }
+    return 0;
+}
+
+int collector_cpu_prepare(struct collector_cpu *const collector) {
+    if (collector_cpu_parse(collector)) {
+        pr_error("Failed to parse cpu load info\n");
+        return 1;
+    }
+    return 0;
+}
+
+int collector_cpu_report(struct collector_cpu *const collector, char report[5]) {
+    collector->idle_last = collector->idle_this;
+    collector->busy_last = collector->busy_last;
+    if (collector_cpu_parse(collector)) {
+        pr_error("Failed to parse cpu load info\n");
+        return 1;
+    }
+    unsigned long const busy_diff = collector->busy_this - collector->busy_last;
+    unsigned long const total_diff = busy_diff + collector->idle_this - collector->idle_last;
+    unsigned short const percent = busy_diff / total_diff * 100;
+    if (percent >= 100) {
+        strcpy(report, "100%");
+    } else {
+        snprintf(report, 5, "%2hu o", percent);
+        report[2] = 0xb0;
+    }
+    return 0;
+}
+
 int collector_init(struct collector const collector) {
     switch (collector.type) {
     case COLLECTOR_TYPE_STRING:
@@ -303,6 +392,7 @@ int collector_init(struct collector const collector) {
     case COLLECTOR_TYPE_IO:
         return collector_io_init(collector.io);
     case COLLECTOR_TYPE_CPU:
+        return collector_cpu_init(collector.cpu);
     case COLLECTOR_TYPE_NET:
         return 0;
     default:
@@ -320,6 +410,7 @@ int collector_prepare(struct collector const collector) {
     case COLLECTOR_TYPE_IO:
         return collector_io_prepare(collector.io);
     case COLLECTOR_TYPE_CPU:
+        return collector_cpu_prepare(collector.cpu);
     case COLLECTOR_TYPE_NET:
         return 0;
     default:
@@ -337,6 +428,7 @@ int collector_report(struct collector const collector, char report[5]) {
     case COLLECTOR_TYPE_IO:
         return collector_io_report(collector.io, report);
     case COLLECTOR_TYPE_CPU:
+        return collector_cpu_report(collector.cpu, report);
     case COLLECTOR_TYPE_NET:
         return 0;
     default:
@@ -454,6 +546,50 @@ struct collector_cpu *collector_parse_argument_cpu(char const *const sep_type_cp
     return collector;
 }
 
+struct collector_net *collector_parse_argument_net(char const *const sep_type_iface, char const *const sep_iface_tr, char const *const end) {
+    if (sep_iface_tr <= sep_type_iface + 1) {
+        pr_error("Interface device is not defined\n");
+        return NULL;
+    }
+    if (end <= sep_iface_tr + 1) {
+        pr_error("Tx/Rx type is not defined");
+        return NULL;
+    }
+    enum collector_net_type type;
+    switch (*(sep_iface_tr + 1)) {
+    case 't':
+    case 'T':
+        type = COLLECTOR_NET_TYPE_TX;
+        break;
+    case 'r':
+    case 'R':
+        type = COLLECTOR_NET_TYPE_RX;
+        break;
+    case 'm':
+    case 'M':
+        type = COLLECTOR_NET_TYPE_MIXED;
+        break;
+    default:
+        pr_error("Tx/Rx type illegal: %c, should be either one of t, T, r, R, m, M\n", *(sep_iface_tr + 1));
+        return NULL;
+    }
+    size_t len_iface = sep_iface_tr - sep_type_iface - 1;
+    struct collector_net *collector;
+    if (len_iface >= sizeof collector->interface) {
+        pr_error("Network interface  name too long, length %lu but at most %lu: '%s'\n", len_iface, sizeof collector->interface, sep_type_iface + 1);
+        return NULL;
+    }
+    if (!(collector = malloc(sizeof *collector))) {
+        pr_error_with_errno("Failed to allocate memory for network collector");
+        return NULL;
+    }
+    strncpy(collector->interface, sep_type_iface + 1, len_iface);
+    collector->interface[len_iface] = '\0';
+    collector->type = type;
+    return collector;
+}
+
+
 int collector_parse_argument(struct collector *collector, char const *const arg, char const *const seps[], unsigned const sep_count, char const *const end) {
     if (!collector) {
         pr_error("Collector not allocated yet\n");
@@ -477,6 +613,7 @@ int collector_parse_argument(struct collector *collector, char const *const arg,
         collector->cpu = collector_parse_argument_cpu(seps[1]);
         break;
     case COLLECTOR_TYPE_NET:
+        collector->net = collector_parse_argument_net(seps[1], seps[2], end);
         break;
     default:
         pr_error("Collector type not set: '%s'\n", arg);

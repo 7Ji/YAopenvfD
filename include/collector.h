@@ -57,24 +57,24 @@ struct collector_cpu {
     char label[16];
     char *buffer;
     size_t alloc;
-    unsigned long total_last;
-    unsigned long total_this;
-    unsigned long work_last;
-    unsigned long work_this;
+    unsigned long busy_last;
+    unsigned long busy_this;
+    unsigned long idle_last;
+    unsigned long idle_this;
+};
+
+enum collector_net_type {
+    COLLECTOR_NET_TYPE_TX,
+    COLLECTOR_NET_TYPE_RX,
+    COLLECTOR_NET_TYPE_MIXED
 };
 
 struct collector_net {
-    // struct collector_net *next;
     char interface[NAME_MAX + 1];
+    int tx_fd;
+    int rx_fd;
+    enum collector_net_type type;
 };
-
-// union collector_definer {
-//     struct collector_string *string;
-//     struct collector_temp *temp;
-//     struct collector_io *io;
-//     struct collector_cpu *cpu;
-//     struct collector_net *net;
-// };
 
 struct collector {
     enum collector_type type;
@@ -87,13 +87,6 @@ struct collector {
         struct collector_net *net;
     };
 };
-
-// struct collector {
-//     enum collector_type type;
-//     union collector_definer definer;
-//     // union collector_storage storage;
-//     char report[5];
-// };
 
 // int collector_io(struct collector_io *collector);
 

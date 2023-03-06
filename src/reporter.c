@@ -125,10 +125,10 @@ struct reporter *reporter_parse_argument(char const *const arg) {
         pr_error("Failed to parse argument into collector definition: '%s'\n", arg);
         return NULL;
     }
-    len = reporter_parse_argument_safe_len(seps[0] - arg);
-    strncpy(temp, arg, len);
-    temp[len] = '\0';
-    unsigned long const duration = strtoul(temp, NULL, 10);
+    // len = reporter_parse_argument_safe_len(seps[0] - arg);
+    // strncpy(temp, arg, len);
+    // temp[len] = '\0';
+    unsigned long const duration = strtoul(arg, NULL, 10);
     struct reporter *reporter = malloc(sizeof *reporter);
     if (!reporter) {
         pr_error_with_errno("Failed to allocate memory for reporter definiton '%s'", arg);

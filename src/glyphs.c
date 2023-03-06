@@ -134,6 +134,12 @@
 #define GLYPHS_CHAR_X(X)    GLYPHS_LEFT_DOWN(X) | GLYPHS_LEFT_UP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_RIGHT_DOWN(X) | GLYPHS_MIDDLE(X)
 #define GLYPHS_CHAR_Y(X)    GLYPHS_BOTTOM(X) | GLYPHS_LEFT_UP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_RIGHT_DOWN(X) | GLYPHS_MIDDLE(X)
 #define GLYPHS_CHAR_Z(X)    GLYPHS_BOTTOM(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_TOP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_MIDDLE(X)
+#define GLYPHS_CHAR_SLASH(X) \
+                            GLYPHS_RIGHT_UP(X) | GLYPHS_MIDDLE(X) | GLYPHS_LEFT_DOWN(X)
+#define GLYPHS_CHAR_BACKSLASH(X) \
+                            GLYPHS_LEFT_UP(X) | GLYPHS_MIDDLE(X) | GLYPHS_RIGHT_DOWN(X)
+#define GLYPHS_CHAR_PERCENT(X) \
+                            GLYPHS_RIGHT_UP(X) | GLYPHS_MIDDLE(X) | GLYPHS_LEFT_DOWN(X)
 #define GLYPHS_CHAR_HYPHEN_MINUS(X) \
                             GLYPHS_MIDDLE(X)
 #define GLYPHS_CHAR_LOW_LINE(X) \
@@ -146,10 +152,13 @@
         /* ASCII 0-9 */     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
         /* ASCII 10-19 */   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
         /* ASCII 20-29 */   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
-        /* ASCII 30-39 */   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+        /* ASCII 30-36 */   0, 0, 0, 0, 0, 0, 0, \
+        /* ASCII 37: % */   GLYPHS_CHAR_PERCENT(X), \
+        /* ASCII 38-39 */   0, 0, \
         /* ASCII 40-44 */   0, 0, 0, 0, 0, \
         /* ASCII 45: - */   GLYPHS_CHAR_HYPHEN_MINUS(X), \
-        /* ASCII 46-47 */   0, 0, \
+        /* ASCII 46 */      0, \
+        /* ASCII 47: / */   GLYPHS_CHAR_SLASH(X), \
         /* ASCII 48: 0 */   GLYPHS_CHAR_0(X), \
         /* ASCII 49: 1 */   GLYPHS_CHAR_1(X), \
         /* ASCII 50: 2 */   GLYPHS_CHAR_2(X), \
@@ -188,7 +197,9 @@
         /* ASCII 88: X */   GLYPHS_CHAR_X(X), \
         /* ASCII 89: Y */   GLYPHS_CHAR_Y(X), \
         /* ASCII 90: Z */   GLYPHS_CHAR_Z(X), \
-        /* ASCII 91-94 */   0, 0, 0, 0, \
+        /* ASCII 91 */      0, \
+        /* ASCII 92: \ */   GLYPHS_CHAR_BACKSLASH(X), \
+        /* ASCII 93-94 */   0, 0, \
         /* ASCII 95: _ */   GLYPHS_CHAR_LOW_LINE(X), \
         /* ASCII 96    */   0, \
         /* ASCII 97: a */   GLYPHS_CHAR_A(X), \
