@@ -55,7 +55,7 @@ int reporter_loop(struct reporter *reporter_head) {
                 collector_report(reporter->collector, buffer);
                 if (*(uint32_t *)buffer != last) {
                     last = *(uint32_t *)buffer;
-                    openvfd_write_report(buffer);
+                    openvfd_write_report(buffer, false);
                     pr_debug("Reporting type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
                 }
                 if (reporter->duration_second &&  --remaining_second == 0) {

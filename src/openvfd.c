@@ -72,8 +72,20 @@ int openvfd_prepare() {
     return 0;
 }
 
-void openvfd_write_report(char const report[5]) {
+void openvfd_write_report(char const report[5], bool const blink) {
     static struct openvfd_write_sequence sequence = {0};
+    if (blink) {
+        static bool colon = true;
+        if (colon) {
+            sequence.dots = 0b00010000;
+            colon = false;
+        } else {
+            sequence.dots = 0;
+            colon = true;
+        }
+    } else {
+        sequence.dots = 0;
+    }
     if (openvfd_char_no_lookup) {
         sequence.char_1 = report[0];
         sequence.char_2 = report[1];

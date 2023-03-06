@@ -173,6 +173,6 @@ enum openvfd_fd628_brightness {   /* FD628 Brightness levels */
 };
 
 int openvfd_prepare();
-void openvfd_write_report(char const report[5]);
+void openvfd_write_report(char const report[5], bool const blink);
 
 #endif
