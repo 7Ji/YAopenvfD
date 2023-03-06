@@ -28,17 +28,17 @@
 #define pr_debug(format, arg...)
 #endif
 
-#define FORMAT_BIT_SEQUANCE "%hu%hu%hu%hu%hu%hu%hu%hu"
+#define FORMAT_BIT_SEQUANCE "%c%c%c%c%c%c%c%c"
 
 #define expand_bit_sequance(x) \
-    x & 0b10000000, \
-    x & 0b01000000, \
-    x & 0b00100000, \
-    x & 0b00010000, \
-    x & 0b00001000, \
-    x & 0b00000100, \
-    x & 0b00000010, \
-    x & 0b00000001
+    x & 0b10000000 ? '1' : '0', \
+    x & 0b01000000 ? '1' : '0', \
+    x & 0b00100000 ? '1' : '0', \
+    x & 0b00010000 ? '1' : '0', \
+    x & 0b00001000 ? '1' : '0', \
+    x & 0b00000100 ? '1' : '0', \
+    x & 0b00000010 ? '1' : '0', \
+    x & 0b00000001 ? '1' : '0'
 
 static inline void free_p(void *p) {
     if (*(void **)p) free(*(void**) p);
