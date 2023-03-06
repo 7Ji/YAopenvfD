@@ -115,11 +115,11 @@ void openvfd_write_report(char const report[5], bool const blink) {
     }
     pr_debug(
         "Characters:\n"
-            "\tdots: 0x%x 0b"FORMAT_BIT_SEQUANCE"\n"
-            "\t1: %c 0x%x 0b"FORMAT_BIT_SEQUANCE"\n"
-            "\t2: %c 0x%x 0b"FORMAT_BIT_SEQUANCE"\n"
-            "\t3: %c 0x%x 0b"FORMAT_BIT_SEQUANCE"\n"
-            "\t4: %c 0x%x 0b"FORMAT_BIT_SEQUANCE"\n", 
+            "\tdots:0x%02x 0b"FORMAT_BIT_SEQUANCE"\n"
+            "\t1: %c 0x%02x 0b"FORMAT_BIT_SEQUANCE"\n"
+            "\t2: %c 0x%02x 0b"FORMAT_BIT_SEQUANCE"\n"
+            "\t3: %c 0x%02x 0b"FORMAT_BIT_SEQUANCE"\n"
+            "\t4: %c 0x%02x 0b"FORMAT_BIT_SEQUANCE"\n", 
             sequence.dots, expand_bit_sequance(sequence.dots),
             report[0], report[0], expand_bit_sequance(sequence.char_1),
             report[1], report[1], expand_bit_sequance(sequence.char_2),
