@@ -7,7 +7,7 @@
 
 static int openvfd_fd = -1;
 static unsigned short openvfd_glyphs_lookup_id = 0;
-static unsigned short const openvfd_dots_lookup_id = 0;
+static unsigned short openvfd_dots_lookup_id = 0;
 static bool openvfd_char_no_lookup = false;
 
 struct openvfd_write_sequence {
@@ -57,10 +57,25 @@ int openvfd_prepare() {
             openvfd_glyphs_lookup_id = 1;
             break;
     }
-    pr_debug("Using glyphs lookup id %d\n", openvfd_glyphs_lookup_id);
+    switch(display.type) {
+        case OPENVFD_DISPLAY_TYPE_5D_7S_X92:
+            openvfd_dots_lookup_id = 1;
+            break;
+        case OPENVFD_DISPLAY_TYPE_5D_7S_ABOX:
+            openvfd_dots_lookup_id = 2;
+            break;
+        case OPENVFD_DISPLAY_TYPE_5D_7S_M9_PRO:
+            openvfd_dots_lookup_id = 3;
+            break;
+        default:
+            openvfd_dots_lookup_id = 0;
+            break;
+
+    }
     if (display.controller > OPENVFD_CONTROLLER_7S_MAX) {
         openvfd_char_no_lookup = true;
     }
+    pr_debug("Using glyphs lookup id %d, dots lookup %d, char no lookup: %s\n", openvfd_glyphs_lookup_id, openvfd_dots_lookup_id, openvfd_char_no_lookup ? "yes" : "no");
     return 0;
 }
 
