@@ -7,7 +7,7 @@
 
 static int openvfd_fd = -1;
 static unsigned short openvfd_glyphs_lookup_id = 0;
-static unsigned short openvfd_dots_lookup_id = 0;
+static unsigned short const openvfd_dots_lookup_id = 0;
 static bool openvfd_char_no_lookup = false;
 
 struct openvfd_write_sequence {
@@ -57,7 +57,6 @@ int openvfd_prepare() {
             openvfd_glyphs_lookup_id = 1;
             break;
     }
-    openvfd_dots_lookup_id = openvfd_glyphs_lookup_id;
     pr_debug("Using glyphs lookup id %d\n", openvfd_glyphs_lookup_id);
     if (display.controller > OPENVFD_CONTROLLER_7S_MAX) {
         openvfd_char_no_lookup = true;
