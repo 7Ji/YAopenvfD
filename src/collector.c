@@ -518,7 +518,7 @@ struct collector_io *collector_parse_argument_io(char const *const sep_type_blkd
 
 struct collector_cpu *collector_parse_argument_cpu(char const *const sep_type_cpuno) {
     int cpu_no = -1;
-    if (*sep_type_cpuno) {
+    if (sep_type_cpuno && *sep_type_cpuno) {
         switch (*(sep_type_cpuno + 1)) {
         case '\0':
         case '-':
