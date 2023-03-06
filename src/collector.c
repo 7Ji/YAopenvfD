@@ -372,7 +372,7 @@ int collector_cpu_report(struct collector_cpu *const collector, char report[5]) 
     }
     unsigned long const busy_diff = collector->busy_this - collector->busy_last;
     unsigned long const total_diff = busy_diff + collector->idle_this - collector->idle_last;
-    unsigned short const percent = busy_diff / total_diff * 100;
+    unsigned short const percent = busy_diff * 100 / total_diff ;
     if (percent >= 100) {
         strcpy(report, "100%");
     } else {
