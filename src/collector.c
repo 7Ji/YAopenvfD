@@ -353,7 +353,6 @@ int collector_cpu_parse(struct collector_cpu *const collector) {
             break;
         }
     }
-    return 0;
 }
 
 int collector_cpu_prepare(struct collector_cpu *const collector) {
