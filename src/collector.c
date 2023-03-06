@@ -221,7 +221,7 @@ static inline int collector_io_report(struct collector_io *const collector, char
     }
     char suffix;
     diff = collector_size_to_human_readable(diff, &suffix);
-    if (snprintf(report, 5, "%lu%c", diff, suffix) < 0) {
+    if (snprintf(report, 5, "%3lu%c", diff, suffix) < 0) {
         pr_error_with_errno("Failed to generate report string for human-readable size %lu%c\n", diff, suffix);
         return 3;
     }
