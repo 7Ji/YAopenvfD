@@ -30,11 +30,12 @@ int reporter_prepare(struct reporter *const reporter_head) {
     int r = openvfd_prepare();
     if (r) {
         pr_error("Failed to prepare OpenVFD: %d\n", r);
+        return 1;
     }
     for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
         if (collector_init(reporter->collector)) {
             pr_error("Failed to init collector for reporter type %d(%s) duration %u\n", reporter->type, reporter_get_type_string(reporter->type), reporter->duration_second);
-            return 1;
+            return 2;
         } else {
             pr_warn("Initialized collector for reporter type %d(%s) duration %u\n", reporter->type, reporter_get_type_string(reporter->type), reporter->duration_second);
         }
