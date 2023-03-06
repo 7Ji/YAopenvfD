@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <linux/limits.h>
 
 #define _cleanup_(x) __attribute__((__cleanup__(x)))
 

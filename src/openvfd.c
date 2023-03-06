@@ -6,6 +6,7 @@
 
 static int openvfd_fd = -1;
 static unsigned short openvfd_glyphs_lookup_id = 0;
+static bool openvfd_char_no_lookup = false;
 
 const uint8_t openvfd_led_dots[OPENVFD_LED_DOT_MAX] = {
     0b00000001,
@@ -65,27 +66,34 @@ int openvfd_prepare() {
             break;
     }
     pr_debug("Using glyphs lookup id %d\n", openvfd_glyphs_lookup_id);
+    if (display.controller > OPENVFD_CONTROLLER_7S_MAX) {
+        openvfd_char_no_lookup = true;
+    }
     return 0;
 }
 
-#define OPENVFD_EXPAND_BIT_SEQUANCE(X) \
-
-
 void openvfd_write_report(char const report[5]) {
     static struct openvfd_write_sequence sequence = {0};
-    // openvfd_clean_write_sequance(&sequence);
-    sequence.char_1 = glyphs_lookup_table[openvfd_glyphs_lookup_id][(uint8_t)report[0]];
-    sequence.char_2 = glyphs_lookup_table[openvfd_glyphs_lookup_id][(uint8_t)report[1]];
-    sequence.char_3 = glyphs_lookup_table[openvfd_glyphs_lookup_id][(uint8_t)report[2]];
-    sequence.char_4 = glyphs_lookup_table[openvfd_glyphs_lookup_id][(uint8_t)report[3]];
+    if (openvfd_char_no_lookup) {
+        sequence.char_1 = report[0];
+        sequence.char_2 = report[1];
+        sequence.char_3 = report[2];
+        sequence.char_4 = report[3];
+    } else {
+        sequence.char_1 = glyphs_lookup_table[openvfd_glyphs_lookup_id][(uint8_t)report[0]];
+        sequence.char_2 = glyphs_lookup_table[openvfd_glyphs_lookup_id][(uint8_t)report[1]];
+        sequence.char_3 = glyphs_lookup_table[openvfd_glyphs_lookup_id][(uint8_t)report[2]];
+        sequence.char_4 = glyphs_lookup_table[openvfd_glyphs_lookup_id][(uint8_t)report[3]];
+    }
     pr_debug(
-        "Characters: "
-            "1: 0b"FORMAT_BIT_SEQUANCE", "
-            "2: 0b"FORMAT_BIT_SEQUANCE", "
-            "3: 0b"FORMAT_BIT_SEQUANCE", "
-            "4: 0b"FORMAT_BIT_SEQUANCE"\n", 
-            expand_bit_sequance(sequence.char_1),
-            expand_bit_sequance(sequence.char_2),
-            expand_bit_sequance(sequence.char_3),
-            expand_bit_sequance(sequence.char_4));
+        "Characters:\n"
+            "\t1: %c 0x%x 0b"FORMAT_BIT_SEQUANCE"\n"
+            "\t2: %c 0x%x 0b"FORMAT_BIT_SEQUANCE"\n"
+            "\t3: %c 0x%x 0b"FORMAT_BIT_SEQUANCE"\n"
+            "\t4: %c 0x%x 0b"FORMAT_BIT_SEQUANCE"\n", 
+            report[0], report[0], expand_bit_sequance(sequence.char_1),
+            report[1], report[1], expand_bit_sequance(sequence.char_2),
+            report[2], report[2], expand_bit_sequance(sequence.char_3),
+            report[3], report[3], expand_bit_sequance(sequence.char_4));
+    write(openvfd_fd, &sequence, sizeof sequence);
 }
