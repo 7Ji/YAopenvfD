@@ -310,7 +310,7 @@ int collector_cpu_parse(struct collector_cpu *const collector) {
             return 1;
         case ' ':
         case '\n':
-            if (parse_line) {
+            if (parse_line && part) {
                 switch (part_id) {
                     case 1: /* cpu */
                         if (strncmp(part, collector->label, c - part + 1)) {
