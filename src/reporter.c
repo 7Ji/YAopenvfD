@@ -44,6 +44,7 @@ int reporter_prepare(struct reporter *const reporter_head) {
 }
 
 int reporter_loop(struct reporter *reporter_head) {
+    uint32_t last = 0;
     while (true) {
         for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
             unsigned remaining_second = reporter->duration_second;
@@ -52,6 +53,10 @@ int reporter_loop(struct reporter *reporter_head) {
                 sleep(1);
                 char buffer[128];
                 collector_report(reporter->collector, buffer);
+                if (*(uint32_t *)buffer == last) {
+                    continue;
+                }
+                last = *(uint32_t *)buffer;
                 openvfd_write_report(buffer);
                 pr_debug("Reporting type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
                 if (reporter->duration_second &&  --remaining_second == 0) {
