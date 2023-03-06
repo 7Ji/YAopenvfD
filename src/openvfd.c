@@ -1,22 +1,14 @@
 #include "openvfd.h"
 #include "glyphs.h"
+#include "dots.h"
 #include <fcntl.h>
 #define OPENVFD_NAME    "openvfd"
 #define OPENVFD_DEV     "/dev/" OPENVFD_NAME
 
 static int openvfd_fd = -1;
 static unsigned short openvfd_glyphs_lookup_id = 0;
+static unsigned short openvfd_dots_lookup_id = 0;
 static bool openvfd_char_no_lookup = false;
-
-const uint8_t openvfd_led_dots[OPENVFD_LED_DOT_MAX] = {
-    0b00000001,
-    0b00000010,
-    0b00000100,
-    0b00001000,
-    0b00010000,
-    0b00100000,
-    0b01000000
-};
 
 struct openvfd_write_sequence {
     uint8_t dots;
@@ -65,6 +57,7 @@ int openvfd_prepare() {
             openvfd_glyphs_lookup_id = 1;
             break;
     }
+    openvfd_dots_lookup_id = openvfd_glyphs_lookup_id;
     pr_debug("Using glyphs lookup id %d\n", openvfd_glyphs_lookup_id);
     if (display.controller > OPENVFD_CONTROLLER_7S_MAX) {
         openvfd_char_no_lookup = true;
@@ -74,18 +67,26 @@ int openvfd_prepare() {
 
 void openvfd_write_report(char const report[5], bool const blink) {
     static struct openvfd_write_sequence sequence = {0};
-    if (blink) {
-        static bool colon = true;
-        if (colon) {
-            sequence.dots = 0b00010000;
-            colon = false;
-        } else {
-            sequence.dots = 0;
-            colon = true;
-        }
-    } else {
-        sequence.dots = 0;
-    }
+    sequence.dots = 
+        dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_ALARM] |
+        dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_USB] |
+        dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_PLAY] |
+        dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_PAUSE] |
+        dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC] |dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_ETH] |
+        dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_WIFI];
+        
+    // if (blink) {
+    //     static bool colon = true;
+    //     if (colon) {
+    //         sequence.dots = 0b00010000;
+    //         colon = false;
+    //     } else {
+    //         sequence.dots = 0;
+    //         colon = true;
+    //     }
+    // } else {
+    //     sequence.dots = 0;
+    // }
     if (openvfd_char_no_lookup) {
         sequence.char_1 = report[0];
         sequence.char_2 = report[1];
