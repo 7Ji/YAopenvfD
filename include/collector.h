@@ -22,18 +22,17 @@ enum collector_type {
     COLLECTOR_TYPE_NET
 };
 
-// struct collector_raw {
-//     struct collector *next;
-// };
-
 struct collector_string {
     char string[256];
     size_t len;
+    bool loop;
     unsigned off;
 };
 
 struct collector_temp {
     unsigned short zone;
+    int stat_fd;
+
 };
 
 enum collector_io_type {
@@ -43,21 +42,25 @@ enum collector_io_type {
 };
 
 struct collector_io {
-    // struct collector_io *next;
     char blkdev[NAME_MAX + 1];
     int stat_fd;
     size_t read_sectors_last;
     size_t read_sectors_this;
     size_t write_sectors_last;
     size_t write_sectors_this;
-    // size_t mixed_sectors_last;
-    // size_t mixed_sectors_this;
     enum collector_io_type type;
 };
 
 struct collector_cpu {
-    // struct collector_cpu *next;
-    
+    int cpu_no;
+    int stat_fd;
+    char label[16];
+    char *buffer;
+    size_t alloc;
+    unsigned long total_last;
+    unsigned long total_this;
+    unsigned long work_last;
+    unsigned long work_this;
 };
 
 struct collector_net {
@@ -95,6 +98,7 @@ struct collector {
 // int collector_io(struct collector_io *collector);
 
 // enum collector_type collector_type_from_reporter_type(enum reporter_type type);
+int collector_init(struct collector collector);
 int collector_prepare(struct collector collector);
 int collector_report(struct collector collector, char report[5]);
 int collector_parse_argument(struct collector *collector, char const *const arg, char const *const seps[], unsigned const sep_count, char const *end);

@@ -3,9 +3,30 @@
 #include <fcntl.h>
 
 #define COLLECTOR_SIZE_SUFFIXES   "BKMGTPEZY"
+#define COLLECTOR_IO_BUFFER_SIZE    1024
+#define COLLECTOR_IO_TEMP_SIZE      64
+#define COLLECTOR_IO_PART_ID_READ_SECTORS   3
+#define COLLECTOR_IO_PART_ID_WRITE_SECTORS  7
+#define COLLECTOR_TEMP_BUFFER_SIZE  8
+#define COLLECTOR_CPU_BUFFER_BASE   8192
+#define COLLECTOR_CPU_BUFFER_MULTIPLY   1.5
+#define COLLECTOR_CPU_MAX_NO    8
+#define COLLECTOR_CPU_PROC_STAT "/proc/stat"
+
 static const unsigned short collector_len_size_suffixes = strlen(COLLECTOR_SIZE_SUFFIXES);
 static const char collector_size_suffixes[] = COLLECTOR_SIZE_SUFFIXES;
 
+static const char collector_io_type_chars[3] = "rwm";
+
+
+static const unsigned collector_parse_argument_minium_sep_count[] = {
+    (unsigned)-1, // None
+    2,  // String
+    2,  // Temp
+    3,  // IO
+    1,  // CPU
+    3,  // Net
+};
 size_t collector_size_to_human_readable(size_t size, char *suffix) {
     for (unsigned short i = 0; i < collector_len_size_suffixes; ++i) {
         if (size < 0x400) {
@@ -18,6 +39,66 @@ size_t collector_size_to_human_readable(size_t size, char *suffix) {
     return size;
 }
 
+int collector_string_prepare(struct collector_string *const collector) {
+    if (collector->loop) {
+        collector->off = 0;
+    }
+    return 0;
+}
+
+int collector_string_report(struct collector_string *const collector, char report[5]) {
+    if (collector->loop) {
+        strncpy(report, collector->string + collector->off, 4);
+        if (collector->off + 4 >= collector->len) {
+            collector->off = 0;
+        } else {
+            ++collector->off;
+        }
+    } else {
+        strncpy(report, collector->string, 4);
+    }
+    return 0;
+}
+
+int collector_temp_init(struct collector_temp *const collector) {
+    char path[PATH_MAX];
+    if (snprintf(path, PATH_MAX, "/sys/class/thermal/thermal_zone%hu/temp", collector->zone) < 0) {
+        pr_error_with_errno("Failed to create sysfs stat path for thermal zone %hu", collector->zone);
+        return 1;
+    }
+    if ((collector->stat_fd = open(path, O_RDONLY)) < 0) {
+        pr_error_with_errno("Failed to open '%s' for read", path);
+        return 2;
+    }
+    pr_warn("Initialized temperature collector for thermal zone %hu\n", collector->zone);
+    return 0;
+}
+
+int collector_temp_report(struct collector_temp *const collector, char report[5]) {
+    char buffer[COLLECTOR_TEMP_BUFFER_SIZE];
+    if (lseek(collector->stat_fd, 0, SEEK_SET)) {
+        pr_error_with_errno("Failed to seek to beginning of stat file for thermal zone %hu", collector->zone);
+        return 1;
+    }
+    if (read(collector->stat_fd, buffer, COLLECTOR_TEMP_BUFFER_SIZE) < 0) {
+        pr_error_with_errno("Failed to read temperature from thermal zone %hu", collector->zone);
+        return 2;
+    }
+    unsigned long temp = strtoul(buffer, NULL, 10);
+    if (temp >= 1000000) {
+        strcpy(report, "xxxx");
+    } else if (temp >= 100000) {
+        snprintf(report, 5, "%luC", temp / 1000);
+    } else if (temp >= 10000) {
+        snprintf(report, 5, "%lu C", temp / 1000);
+        report[2] = 0xb0;
+    } else {
+        snprintf(report, 4, "%lu C", temp / 1000);
+        report[1] = 0xb0;
+    }
+    return 0;
+}
+
 int collector_io_init(struct collector_io *const collector) {
     char path[PATH_MAX];
     if (snprintf(path, PATH_MAX, "/sys/block/%s/stat", collector->blkdev) < 0) {
@@ -25,7 +106,8 @@ int collector_io_init(struct collector_io *const collector) {
         return 1;
     }
     if ((collector->stat_fd = open(path, O_RDONLY)) < 0) {
-        pr_error_with_errno("Failed open '%s' for read, attempting for sysfs subfolders", path);
+        pr_error_with_errno("Failed to open '%s' for read", path);
+        pr_warn("attempting for sysfs subfolders\n");
         size_t len = strlen(collector->blkdev);
         if (len > NAME_MAX) {
             len = NAME_MAX;
@@ -48,13 +130,9 @@ int collector_io_init(struct collector_io *const collector) {
             return 3;
         }
     }
+    pr_warn("Initialized IO collector for block device '%s' type '%c'\n", collector->blkdev, collector_io_type_chars[collector->type]);
     return 0;
 }
-
-#define COLLECTOR_IO_BUFFER_SIZE    1024
-#define COLLECTOR_IO_TEMP_SIZE   64
-#define COLLECTOR_IO_PART_ID_READ_SECTORS   3
-#define COLLECTOR_IO_PART_ID_WRITE_SECTORS  7
 
 int collector_io_parse(struct collector_io *const collector) {
     uint8_t buffer[COLLECTOR_IO_BUFFER_SIZE];
@@ -154,9 +232,89 @@ static inline int collector_io_report(struct collector_io *const collector, char
     return 0;
 }
 
+int collector_cpu_safe_read(struct collector_cpu *const collector) {
+    ssize_t size = 0;
+    for (;;) {
+        if ((size = read(collector->stat_fd, collector->buffer, collector->alloc)) < 0) {
+            pr_error_with_errno("Failed to read %lu bytes from '"COLLECTOR_CPU_PROC_STAT"'", collector->alloc);
+            return 1;
+        }
+        if (collector->alloc > (size_t)size) {
+            return 0;
+        }
+        char *buffer = realloc(collector->buffer, collector->alloc *= COLLECTOR_CPU_BUFFER_MULTIPLY);
+        if (buffer) {
+            collector->buffer = buffer;
+        } else {
+            pr_error_with_errno("Failed to re-allocate memory for CPU stat");
+            return 2;
+        }
+    }
+}
+
+int collector_cpu_init(struct collector_cpu *const collector) {
+    if ((collector->stat_fd = open(COLLECTOR_CPU_PROC_STAT, O_RDONLY)) < 0) {
+        pr_error_with_errno("Failed to open '"COLLECTOR_CPU_PROC_STAT"' for read to prepare for CPU usage info");
+        return 1;
+    }
+    if (!(collector->buffer = malloc(COLLECTOR_CPU_BUFFER_BASE))) {
+        pr_error_with_errno("Failed to allocate memory for CPU stat");
+        close(collector->stat_fd);
+        return 2;
+    }
+    collector->alloc = COLLECTOR_CPU_BUFFER_BASE;
+    if (collector_cpu_safe_read(collector)) {
+        pr_error("Failed to read into memory\n");
+        free(collector->buffer);
+        close(collector->stat_fd);
+        return 3;
+    }
+    bool head = true;
+    char *line = collector->buffer;
+    for (char *c = collector->buffer;; ++c) {
+        switch (*c) {
+        case ' ':
+            if (head) {
+                if (!strncmp(line, collector->label, c - line + 1)) {
+                    return 0;
+                }
+                head = false;
+            }
+            break;
+        case '\0':
+            pr_error("Failed to find line for cpu stat for '%s'\n", collector->label);
+            return 4;
+        case '\n':
+            head = true;
+            line = c + 1;
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+int collector_init(struct collector const collector) {
+    switch (collector.type) {
+    case COLLECTOR_TYPE_STRING:
+        return 0;
+    case COLLECTOR_TYPE_TEMP:
+        return collector_temp_init(collector.temp);
+    case COLLECTOR_TYPE_IO:
+        return collector_io_init(collector.io);
+    case COLLECTOR_TYPE_CPU:
+    case COLLECTOR_TYPE_NET:
+        return 0;
+    default:
+        pr_error("Unexpected collector type %d\n", collector.type);
+        return -1;
+    }
+}
+
 int collector_prepare(struct collector const collector) {
     switch (collector.type) {
     case COLLECTOR_TYPE_STRING:
+        return collector_string_prepare(collector.string);
     case COLLECTOR_TYPE_TEMP:
         return 0;
     case COLLECTOR_TYPE_IO:
@@ -173,8 +331,9 @@ int collector_prepare(struct collector const collector) {
 int collector_report(struct collector const collector, char report[5]) {
     switch (collector.type) {
     case COLLECTOR_TYPE_STRING:
+        return collector_string_report(collector.string, report);
     case COLLECTOR_TYPE_TEMP:
-        return 0;
+        return collector_temp_report(collector.temp, report);
     case COLLECTOR_TYPE_IO:
         return collector_io_report(collector.io, report);
     case COLLECTOR_TYPE_CPU:
@@ -186,14 +345,6 @@ int collector_report(struct collector const collector, char report[5]) {
     }
 }
 
-static const unsigned collector_parse_argument_minium_sep_count[] = {
-    (unsigned)-1, // None
-    2,  // String
-    2,  // Temp
-    3,  // IO
-    2,  // CPU
-    3,  // Net
-};
 
 struct collector_string *collector_parse_argument_string(char const *const start, char const *const end) {
     if (start >= end) {
@@ -211,6 +362,8 @@ struct collector_string *collector_parse_argument_string(char const *const start
         return NULL;
     }
     strncpy(collector->string, start, sizeof collector->string);
+    collector->len = len;
+    collector->loop = len > 4;
     return collector;
 }
 
@@ -271,6 +424,36 @@ struct collector_io *collector_parse_argument_io(char const *const sep_type_blkd
     return collector;
 }
 
+struct collector_cpu *collector_parse_argument_cpu(char const *const sep_type_cpuno) {
+    int cpu_no = -1;
+    if (*sep_type_cpuno) {
+        switch (*(sep_type_cpuno + 1)) {
+        case '\0':
+        case '-':
+            break;
+        default:
+            cpu_no = strtoul(sep_type_cpuno + 1, NULL, 10);
+        }
+    }
+    struct collector_cpu *collector = malloc(sizeof *collector);
+    if (!collector) {
+        pr_error_with_errno("Failed to allocate memory for CPU collector");
+        return NULL;
+    }
+    if (cpu_no >= 0 && cpu_no < COLLECTOR_CPU_MAX_NO) {
+        collector->cpu_no = cpu_no;
+        if (snprintf(collector->label, sizeof collector->label, "cpu%d ", collector->cpu_no) < 0) {
+            pr_error_with_errno("Failed to generate label for cpu no.%d", collector->cpu_no);
+            free(collector);
+            return NULL;
+        }
+    } else {
+        collector->cpu_no = -1;
+        strcpy(collector->label, "cpu ");
+    }
+    return collector;
+}
+
 int collector_parse_argument(struct collector *collector, char const *const arg, char const *const seps[], unsigned const sep_count, char const *const end) {
     if (!collector) {
         pr_error("Collector not allocated yet\n");
@@ -291,6 +474,7 @@ int collector_parse_argument(struct collector *collector, char const *const arg,
         collector->io = collector_parse_argument_io(seps[1], seps[2], end);
         break;
     case COLLECTOR_TYPE_CPU:
+        collector->cpu = collector_parse_argument_cpu(seps[1]);
         break;
     case COLLECTOR_TYPE_NET:
         break;

@@ -26,7 +26,15 @@ enum reporter_type reporter_get_type_from_string(char const *const string) {
     return REPORTER_TYPE_NONE;
 }
 
-void reporter_all(struct reporter *reporter_head) {
+int reporter_all(struct reporter *reporter_head) {
+    for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
+        if (collector_init(reporter->collector)) {
+            pr_error("Failed to init collector for reporter type %d(%s) duration %u\n", reporter->type, reporter_get_type_string(reporter->type), reporter->duration_second);
+            return 1;
+        } else {
+            pr_warn("Initialized collector for reporter type %d(%s) duration %u\n", reporter->type, reporter_get_type_string(reporter->type), reporter->duration_second);
+        }
+    }
     while (true) {
         for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
             unsigned remaining_second = reporter->duration_second;
@@ -79,8 +87,8 @@ struct reporter *reporter_parse_argument(char const *const arg) {
             break;
         }
     }
-    if (sep_id < 2) {
-        pr_error("Argument too short, expecting at least 2 seperator: '%s'\n", arg);
+    if (sep_id < 1) {
+        pr_error("Argument too short, expecting at least 1 seperator: '%s'\n", arg);
         return NULL;
     }
     if (!end) {

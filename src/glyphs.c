@@ -188,7 +188,9 @@
         /* ASCII 88: X */   GLYPHS_CHAR_X(X), \
         /* ASCII 89: Y */   GLYPHS_CHAR_Y(X), \
         /* ASCII 90: Z */   GLYPHS_CHAR_Z(X), \
-        /* ASCII 91-96 */   0, 0, 0, 0, 0, 0, \
+        /* ASCII 91-94 */   0, 0, 0, 0, \
+        /* ASCII 95: _ */   GLYPHS_CHAR_LOW_LINE(X), \
+        /* ASCII 96    */   0, \
         /* ASCII 97: a */   GLYPHS_CHAR_A(X), \
         /* ASCII 98: b */   GLYPHS_CHAR_B(X), \
         /* ASCII 99: c */   GLYPHS_CHAR_C(X), \
