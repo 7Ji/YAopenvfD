@@ -365,7 +365,7 @@ int collector_cpu_prepare(struct collector_cpu *const collector) {
 
 int collector_cpu_report(struct collector_cpu *const collector, char report[5]) {
     collector->idle_last = collector->idle_this;
-    collector->busy_last = collector->busy_last;
+    collector->busy_last = collector->busy_this;
     if (collector_cpu_parse(collector)) {
         pr_error("Failed to parse cpu load info\n");
         return 1;
