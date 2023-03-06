@@ -61,9 +61,8 @@ int cli_parse(int const argc, char const *const argv[], struct reporter **const 
             }
             if (reporter_last) {
                 reporter_last->next = reporter_current;
-            } else {
-                reporter_last = reporter_current;
             }
+            reporter_last = reporter_current;
         default:
             break;
         }
