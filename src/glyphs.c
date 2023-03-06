@@ -1,9 +1,5 @@
 #include "glyphs.h"
 
-
-// #define GLYPHS_BIT(x) 0b00000001 << ( x - 1 )
-
-
 /*
  * Most displays have 5 sections, 1 - 4 are the digits,
  * the 5th is mapped to indicators (5A-5G).
@@ -244,71 +240,3 @@ const uint8_t glyphs_lookup_table[][256] = {
     GLYPHS_SETUP(3),
     GLYPHS_SETUP(4)
 };
-
-// static const unsigned short 
-//     glyphs_ascii_lookup_table_len = 
-//         sizeof glyphs_ascii_lookup_table / 
-//             sizeof glyphs_ascii_lookup_table[0];
-
-// uint8_t glyphs_lookup_char(char const character, unsigned short table_id) {
-//     if (table_id >= glyphs_ascii_lookup_table_len) {
-//         pr_warn("Looking up character 0x%hx(%c) in non-existing table %hu\n", character, character, table_id);
-//         return 0;
-//     }
-//     return glyphs_ascii_lookup_table[table_id][(uint8_t)character];
-// };
-
-/*
-void glyphs_debugging() {
-    // for (unsigned short i = 0; i < 5; ++i) {
-        uint8_t const *const table = glyphs_ascii_lookup_table[0];
-        for (uint8_t c = 0;; ++c) {
-            uint8_t glyph = table[c];
-            printf("character %hu (%c):\n", c, c);
-            if (glyph & GLYPHS_TOP(0)) {
-                printf("   -  \n");
-            } else {
-                printf("\n");
-            }
-            if (glyph & GLYPHS_LEFT_UP(0)) {
-                printf(" |   ");
-            } else {
-                printf("     ");
-            }
-            if (glyph & GLYPHS_RIGHT_UP(0)) {
-                printf("|\n");
-            } else {
-                printf("\n");
-            }
-            if (glyph & GLYPHS_MIDDLE(0)) {
-                printf("   -\n");
-            } else {
-                printf("\n");
-            }
-            if (glyph & GLYPHS_LEFT_DOWN(0)) {
-                printf(" |   ");
-            } else {
-                printf("     ");
-            }
-            if (glyph & GLYPHS_RIGHT_DOWN(0)) {
-                printf("|\n");
-            } else {
-                printf("\n");
-            }
-            if (glyph & GLYPHS_BOTTOM(0)) {
-                printf("   -  ");
-            } else {
-                printf("      ");
-            }
-            if (glyph & GLYPHS_POINT(0)) {
-                printf(".\n");
-            } else {
-                printf("\n");
-            }
-            if (c == 0xffU) {
-                break;
-            }
-        }
-    // }
-}
-*/

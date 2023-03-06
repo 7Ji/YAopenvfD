@@ -1,10 +1,5 @@
 #include "reporter.h"
 #include "openvfd.h"
-// #include <pthread.h>
-
-// enum reporter_type reporter_type_from_collector_type(enum collector_type const type) {
-//     return (enum reporter_type) type;
-// }
 
 static const char reporter_type_strings[][7] = {
     "",
@@ -23,7 +18,6 @@ enum reporter_type reporter_get_type_from_string(char const *const string) {
     if (!string || !string[0]) {
         return REPORTER_TYPE_NONE;
     }
-    puts(string);
     for (enum reporter_type type = REPORTER_TYPE_NONE + 1; type <= REPORTER_TYPE_MAX; ++type) {
         if (!strcmp(reporter_type_strings[type], string)) {
             return type;
@@ -32,7 +26,7 @@ enum reporter_type reporter_get_type_from_string(char const *const string) {
     return REPORTER_TYPE_NONE;
 }
 
-void reporter_all(struct reporter *reporter_head, unsigned prepare_ahead_second) {
+void reporter_all(struct reporter *reporter_head) {
     while (true) {
         for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
             unsigned remaining_second = reporter->duration_second;
@@ -42,8 +36,8 @@ void reporter_all(struct reporter *reporter_head, unsigned prepare_ahead_second)
                 char buffer[128];
                 collector_report(reporter->collector, buffer);
                 openvfd_write_report(buffer);
-                pr_debug("Reporting type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, reporter->report);
-                if (reporter->duration_second && --remaining_second) {
+                pr_debug("Reporting type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
+                if (reporter->duration_second &&  --remaining_second == 0) {
                     break;
                 }
             }
@@ -120,22 +114,22 @@ struct reporter *reporter_parse_argument(char const *const arg) {
         return NULL;
     }
     if (collector_parse_argument(&collector, arg, seps, sep_id, end)) {
+        pr_error("Failed to parse argument into collector definition: '%s'\n", arg);
         return NULL;
     }
     len = reporter_parse_argument_safe_len(seps[0] - arg);
     strncpy(temp, arg, len);
     temp[len] = '\0';
     unsigned long const duration = strtoul(temp, NULL, 10);
-    // switch ()
     struct reporter *reporter = malloc(sizeof *reporter);
     if (!reporter) {
+        pr_error_with_errno("Failed to allocate memory for reporter definiton '%s'", arg);
         free(collector.raw);
         return NULL;
     }
     reporter->duration_second = duration;
     reporter->next = NULL;
     reporter->type = reporter_type;
-    // reporter->collector.type =  ;
-    pr_warn("Reporter for %s duration %lu\n", reporter_get_type_string(reporter_type), duration);
+    reporter->collector = collector;
     return reporter;
 }
