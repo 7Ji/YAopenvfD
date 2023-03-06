@@ -172,6 +172,7 @@ enum openvfd_fd628_brightness {   /* FD628 Brightness levels */
     OPENVFD_FD628_Brightness_8
 };
 
+int openvfd_prepare();
 void openvfd_write_report(char const report[5]);
 
 #endif

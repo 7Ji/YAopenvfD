@@ -2,5 +2,5 @@
 #define _HAVE_CLI_H
 #include "common.h"
 
-int cli_interface(int argc, char *argv[]);
+int cli_interface(int const argc, char const *const argv[]);
 #endif

@@ -21,7 +21,9 @@ struct reporter {
     unsigned duration_second;
 };
 
-enum reporter_type reporter_type_from_collector_type(enum collector_type type);
-char const *reporter_get_type_string(enum reporter_type type);
+// enum reporter_type reporter_type_from_collector_type(enum collector_type type);
+// char const *reporter_get_type_string(enum reporter_type type);
 struct reporter *reporter_parse_argument(char const *arg);
+int reporter_prepare(struct reporter *reporter_head);
+int reporter_loop(struct reporter *reporter_head);
 #endif
