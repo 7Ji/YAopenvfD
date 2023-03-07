@@ -160,10 +160,10 @@ struct watcher *wacher_parse_argument(char const *const arg) {
         case WATCHER_TYPE_FILE:
         case WATCHER_TYPE_DEV:
         case WATCHER_TYPE_SYS:
-            watcher->file = watcher_parse_argument_file(seps[1], watcher_type);
+            watcher->file = watcher_parse_argument_file(seps[1] + 1, watcher_type);
             break;
         case WATCHER_TYPE_NET_CARRIER:
-            watcher->net_carrier = watcher_parse_argument_net_carrier(seps[1]);
+            watcher->net_carrier = watcher_parse_argument_net_carrier(seps[1] + 1);
             break;
         default:
             free(watcher);
