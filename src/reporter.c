@@ -143,13 +143,15 @@ int reporter_loop(struct reporter *reporter_head) {
         for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
             unsigned remaining_second = reporter->duration_second;
             bool blink = reporter->type == REPORTER_TYPE_TIME;
+            bool dots_update = reporter->dots != dots_last;
             collector_prepare(reporter->collector);
             while (true) {
                 sleep(1);
                 char buffer[5];
                 collector_report(reporter->collector, buffer);
                 uint32_t word_this = *(uint32_t *)buffer;
-                if (blink || word_this != word_last || reporter->dots != dots_last) {
+                if (blink || word_this != word_last || dots_update) {
+                    dots_update = false;
                     word_last = word_this;
                     openvfd_write_report(word_this, reporter->dots, blink);
                     pr_debug("Reporting type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
