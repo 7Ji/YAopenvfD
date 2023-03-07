@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 An alternative to `OpenVFDService`, which is provided as the official service daemon in the [linux_openvfd] project.
 
-This project is aimed at providing distro-independent single-binary feature-equivalent experience to the official `OpenVFDService` + CoreELEC-only Kodi addon combination. 
+This project is aimed at providing distro-independent single-binary feature-equivalent experience to the official `OpenVFDService` + `service.openvfd` Kodi addon combination. 
 
 Most of the new report features are added to make it more headless-server-targeted than media-center-targeted.
 
