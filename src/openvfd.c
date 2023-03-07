@@ -1,8 +1,11 @@
 #include "openvfd.h"
 #include "glyphs.h"
+#include <sys/ioctl.h>
 #include <fcntl.h>
 #define OPENVFD_NAME    "openvfd"
 #define OPENVFD_DEV     "/dev/" OPENVFD_NAME
+#define OPENVFD_IOC_MAGIC           'M'
+#define OPENVFD_IOC_GDISPLAY_TYPE   _IOR(OPENVFD_IOC_MAGIC,  8, int)
 
 static int openvfd_fd = -1;
 static unsigned short openvfd_glyphs_lookup_id = 0;
@@ -10,6 +13,54 @@ static unsigned short openvfd_dots_lookup_id = 0;
 static bool openvfd_char_no_lookup = false;
 static uint8_t openvfd_colon_add = 0;
 static uint8_t openvfd_colon_remove = 0;
+
+enum openvfd_display_mode {
+    OPENVFD_DISPLAY_MODE_NONE,
+    OPENVFD_DISPLAY_MODE_CLOCK,
+    OPENVFD_DISPLAY_MODE_CHANNEL,
+    OPENVFD_DISPLAY_MODE_PLAYBACK_TIME,
+    OPENVFD_DISPLAY_MODE_TITLE,
+    OPENVFD_DISPLAY_MODE_TEMPERATURE,
+    OPENVFD_DISPLAY_MODE_DATE,
+    OPENVFD_DISPLAY_MODE_MAX,
+};
+
+enum openvfd_controller {
+    OPENVFD_CONTROLLER_FD628        = 0x00,
+    OPENVFD_CONTROLLER_FD620,
+    OPENVFD_CONTROLLER_TM1618,
+    OPENVFD_CONTROLLER_FD650,
+    OPENVFD_CONTROLLER_HBS658,
+    OPENVFD_CONTROLLER_FD655,
+    OPENVFD_CONTROLLER_FD6551,
+    OPENVFD_CONTROLLER_7S_MAX,
+    OPENVFD_CONTROLLER_IL3829        = 0xFA,
+    OPENVFD_CONTROLLER_PCD8544,
+    OPENVFD_CONTROLLER_SH1106,
+    OPENVFD_CONTROLLER_SSD1306,
+    OPENVFD_CONTROLLER_HD44780,
+};
+
+enum openvfd_display_type {
+    OPENVFD_DISPLAY_TYPE_5D_7S_NORMAL,        // T95U
+    OPENVFD_DISPLAY_TYPE_5D_7S_T95,                // T95K is different.
+    OPENVFD_DISPLAY_TYPE_5D_7S_X92,
+    OPENVFD_DISPLAY_TYPE_5D_7S_ABOX,
+    OPENVFD_DISPLAY_TYPE_FD620_REF,
+    OPENVFD_DISPLAY_TYPE_4D_7S_COL,
+    OPENVFD_DISPLAY_TYPE_5D_7S_M9_PRO,
+    OPENVFD_DISPLAY_TYPE_5D_7S_G9SX,
+    OPENVFD_DISPLAY_TYPE_4D_7S_FREESATGTC,
+    OPENVFD_DISPLAY_TYPE_5D_7S_TAP1,
+    OPENVFD_DISPLAY_TYPE_MAX,
+};
+
+struct openvfd_display {
+    uint8_t type;
+    uint8_t reserved;
+    uint8_t flags;
+    uint8_t controller;
+};
 
 struct openvfd_write_sequence {
     uint8_t dots;
