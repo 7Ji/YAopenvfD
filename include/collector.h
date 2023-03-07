@@ -1,17 +1,8 @@
 #ifndef _HAVE_WORKER_H
 #define _HAVE_WORKER_H
 #include "common.h"
-// #include "reporter.h"
 
-#define COLLECTOR_IO_DISKSTAT "/proc/diskstats"
-#define COLLECTOR_IO_ALLOC_BASE 0x1000
-#define COLLECTOR_IO_ALLOC_MULTIPLY 2
-
-#define COLLECTOR_DEFINER_IO_BLKDEV_MAXLEN  64
-
-#define COLLECTOR_IO_ID_NAME    3
-#define COLLECTOR_IO_ID_READ    6
-#define COLLECTOR_IO_ID_WRITE   10
+#define COLLECTOR_REPORT_SIZE   5
 
 enum collector_type {
     COLLECTOR_TYPE_NONE,
