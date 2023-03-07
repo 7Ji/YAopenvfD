@@ -84,4 +84,4 @@ clean:
 	rm -rf $(DIR_OBJECT) $(BINARY_DAEMON) $(BINARY_GLYPH_TEST)
 
 prepare:
-	$(shell [[ ! -d $(DIR_OBJECT) ]] && mkdir $(DIR_OBJECT))
+	mkdir -p $(DIR_OBJECT)
