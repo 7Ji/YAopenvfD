@@ -162,7 +162,7 @@ int reporter_loop(struct reporter *reporter_head) {
                         pr_error("Failed to write report to OpenVFD dev\n");
                         return 3;
                     }
-                    pr_debug("Reporting type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
+                    pr_debug("Reported type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
                 } else {
                     pr_debug("Omitted report type %s, remaining %u seconds, report content: %s, since nothing changed\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
                 }
