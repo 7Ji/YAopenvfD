@@ -166,7 +166,7 @@ int collector_io_prepare(struct collector_io *const collector) {
     return 0;
 }
 
-int collector_io_report(struct collector_io *const collector, char report[5]) {
+int collector_io_report(struct collector_io *const collector, char report[COLLECTOR_REPORT_SIZE]) {
     collector->read_sectors_last = collector->read_sectors_this;
     collector->write_sectors_last = collector->write_sectors_this;
     if (collector_io_parse(collector)) {

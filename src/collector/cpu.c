@@ -171,7 +171,7 @@ int collector_cpu_prepare(struct collector_cpu *const collector) {
     return 0;
 }
 
-int collector_cpu_report(struct collector_cpu *const collector, char report[5]) {
+int collector_cpu_report(struct collector_cpu *const collector, char report[COLLECTOR_REPORT_SIZE]) {
     collector->idle_last = collector->idle_this;
     collector->busy_last = collector->busy_this;
     if (collector_cpu_parse(collector)) {

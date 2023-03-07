@@ -32,7 +32,7 @@ int collector_temp_init(struct collector_temp *const collector) {
     return 0;
 }
 
-int collector_temp_report(struct collector_temp *const collector, char report[5]) {
+int collector_temp_report(struct collector_temp *const collector, char report[COLLECTOR_REPORT_SIZE]) {
     char buffer[COLLECTOR_TEMP_BUFFER_SIZE];
     if (lseek(collector->stat_fd, 0, SEEK_SET)) {
         pr_error_with_errno("Failed to seek to beginning of stat file for thermal zone %hu", collector->zone);

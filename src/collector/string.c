@@ -28,7 +28,7 @@ int collector_string_prepare(struct collector_string *const collector) {
     return 0;
 }
 
-int collector_string_report(struct collector_string *const collector, char report[5]) {
+int collector_string_report(struct collector_string *const collector, char report[COLLECTOR_REPORT_SIZE]) {
     if (collector->loop) {
         strncpy(report, collector->string + collector->off, 4);
         if (collector->off + 4 >= collector->len) {
