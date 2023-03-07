@@ -98,6 +98,8 @@
 #define GLYPHS_4_P  0b10000000
 /*=============================*/
 
+
+/* Most of the below representations are adapted from https://en.wikipedia.org/wiki/Seven-segment_display_character_representations#Alphabet */
 /* _
   | |
   |_| */
@@ -151,29 +153,98 @@
   |
   |_ */
 #define GLYPHS_CHAR_UPPER_C(X)  GLYPHS_TOP(X) | GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_BOTTOM(X)
-#define GLYPHS_CHAR_UPPER_D(X)  
-#define GLYPHS_CHAR_UPPER_E(X)
-#define GLYPHS_CHAR_UPPER_F(X)
-#define GLYPHS_CHAR_UPPER_G(X)
-#define GLYPHS_CHAR_UPPER_H(X)
-#define GLYPHS_CHAR_UPPER_I(X)
-#define GLYPHS_CHAR_UPPER_J(X)
-#define GLYPHS_CHAR_UPPER_K(X)
-#define GLYPHS_CHAR_UPPER_L(X)
-#define GLYPHS_CHAR_UPPER_M(X)
-#define GLYPHS_CHAR_UPPER_N(X)
-#define GLYPHS_CHAR_UPPER_O(X)
-#define GLYPHS_CHAR_UPPER_P(X)
-#define GLYPHS_CHAR_UPPER_Q(X)
-#define GLYPHS_CHAR_UPPER_R(X)
-#define GLYPHS_CHAR_UPPER_S(X)
-#define GLYPHS_CHAR_UPPER_T(X)
-#define GLYPHS_CHAR_UPPER_U(X)
-#define GLYPHS_CHAR_UPPER_V(X)
-#define GLYPHS_CHAR_UPPER_W(X)
-#define GLYPHS_CHAR_UPPER_X(X)
-#define GLYPHS_CHAR_UPPER_Y(X)
-#define GLYPHS_CHAR_UPPER_Z(X)
+/* _
+    |
+  |_| */
+#define GLYPHS_CHAR_UPPER_D(X)  GLYPHS_LEFT_DOWN(X) | GLYPHS_TOP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_RIGHT_DOWN(X) | GLYPHS_BOTTOM(X)
+/* _
+  |_
+  |_ */
+#define GLYPHS_CHAR_UPPER_E(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_TOP(X) | GLYPHS_MIDDLE(X) | GLYPHS_BOTTOM(X)
+/* _
+  |_
+  |  */
+#define GLYPHS_CHAR_UPPER_F(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_TOP(X) | GLYPHS_MIDDLE(X)
+/* _
+  |
+  |_| */
+#define GLYPHS_CHAR_UPPER_G(X)  GLYPHS_TOP(X) | GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_BOTTOM(X) | GLYPHS_RIGHT_DOWN(X)
+/*
+  |_| 
+  | | */
+#define GLYPHS_CHAR_UPPER_H(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_MIDDLE(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_RIGHT_DOWN(X)
+/*
+  |
+  |   */
+#define GLYPHS_CHAR_UPPER_I(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X)
+/*
+    |
+   _| */
+#define GLYPHS_CHAR_UPPER_J(X)  GLYPHS_RIGHT_UP(X) | GLYPHS_RIGHT_DOWN(X) | GLYPHS_BOTTOM(X)
+/* _
+  |_
+  | | */
+#define GLYPHS_CHAR_UPPER_K(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_TOP(X) | GLYPHS_MIDDLE(X) | GLYPHS_RIGHT_DOWN(X)
+/*
+  |
+  |_ */
+#define GLYPHS_CHAR_UPPER_L(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_BOTTOM(X)
+/* _
+  | |
+   _  */
+#define GLYPHS_CHAR_UPPER_M(X)  GLYPHS_LEFT_UP(X) | GLYPHS_TOP(X) | GLYPHS_BOTTOM(X) | GLYPHS_RIGHT_UP(X)
+/* _ 
+  | |
+  | | */
+#define GLYPHS_CHAR_UPPER_N(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_TOP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_RIGHT_DOWN(X)
+/* _ 
+  | |
+  |_| */
+#define GLYPHS_CHAR_UPPER_O(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_BOTTOM(X) | GLYPHS_RIGHT_DOWN(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_TOP(X)
+/* _
+  |_|
+  |   */
+#define GLYPHS_CHAR_UPPER_P(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_TOP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_MIDDLE(X)
+/* _
+  |_|
+   _ */
+#define GLYPHS_CHAR_UPPER_Q(X)  GLYPHS_TOP(X) | GLYPHS_LEFT_UP(X) | GLYPHS_MIDDLE(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_BOTTOM(X)
+/* _
+  |_|
+  |_  */
+#define GLYPHS_CHAR_UPPER_R(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_TOP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_MIDDLE(X) | GLYPHS_BOTTOM(X)
+/* _
+  |_
+   _|*/
+#define GLYPHS_CHAR_UPPER_S(X)  GLYPHS_TOP(X) | GLYPHS_LEFT_UP(X) | GLYPHS_MIDDLE(X) | GLYPHS_RIGHT_DOWN(X) | GLYPHS_BOTTOM(X)
+/* _
+  |
+  |  */
+#define GLYPHS_CHAR_UPPER_T(X)  GLYPHS_TOP(X) | GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X)
+/*
+  | |
+  |_| */
+#define GLYPHS_CHAR_UPPER_U(X)  GLYPHS_LEFT_UP(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_BOTTOM(X) | GLYPHS_RIGHT_DOWN(X) | GLYPHS_RIGHT_UP(X)
+/*
+  | |
+   _| */
+#define GLYPHS_CHAR_UPPER_V(X)  GLYPHS_LEFT_UP(X) | GLYPHS_BOTTOM(X) | GLYPHS_RIGHT_DOWN(X) | GLYPHS_RIGHT_UP(X)
+/* _
+  
+  |_| */
+#define GLYPHS_CHAR_UPPER_W(X)  GLYPHS_LEFT_DOWN(X) | GLYPHS_BOTTOM(X) | GLYPHS_TOP(X) | GLYPHS_RIGHT_DOWN(X)
+/* _
+   _
+   _ */
+#define GLYPHS_CHAR_UPPER_X(X)  GLYPHS_TOP(X) | GLYPHS_MIDDLE(X) | GLYPHS_BOTTOM(X)
+/* 
+  |_|
+   _ */
+#define GLYPHS_CHAR_UPPER_Y(X)  GLYPHS_LEFT_UP(X) | GLYPHS_MIDDLE(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_BOTTOM(X)
+/* _
+   _|
+  |_ */
+#define GLYPHS_CHAR_UPPER_Z(X)  GLYPHS_TOP(X) | GLYPHS_RIGHT_UP(X) | GLYPHS_MIDDLE(X) | GLYPHS_LEFT_DOWN(X) | GLYPHS_BOTTOM(X)
 
 #define GLYPHS_CHAR_LOWER_A(X)
 #define GLYPHS_CHAR_LOWER_B(X)
@@ -269,32 +340,32 @@
         /* ASCII 57: 9 */   GLYPHS_CHAR_9(X), \
         /* ASCII 58-59 */   0, 0, \
         /* ASCII 60-64 */   0, 0, 0, 0, 0, \
-        /* ASCII 65: A */   GLYPHS_CHAR_A(X), \
-        /* ASCII 66: B */   GLYPHS_CHAR_B(X), \
-        /* ASCII 67: C */   GLYPHS_CHAR_C(X), \
-        /* ASCII 68: D */   GLYPHS_CHAR_D(X), \
-        /* ASCII 69: E */   GLYPHS_CHAR_E(X), \
-        /* ASCII 70: F */   GLYPHS_CHAR_F(X), \
-        /* ASCII 71: G */   GLYPHS_CHAR_G(X), \
-        /* ASCII 72: H */   GLYPHS_CHAR_H(X), \
-        /* ASCII 73: I */   GLYPHS_CHAR_I(X), \
-        /* ASCII 74: J */   GLYPHS_CHAR_J(X), \
-        /* ASCII 75: K */   GLYPHS_CHAR_K(X), \
-        /* ASCII 76: L */   GLYPHS_CHAR_L(X), \
-        /* ASCII 77: M */   GLYPHS_CHAR_M(X), \
-        /* ASCII 78: N */   GLYPHS_CHAR_N(X), \
-        /* ASCII 79: O */   GLYPHS_CHAR_O(X), \
-        /* ASCII 80: P */   GLYPHS_CHAR_P(X), \
-        /* ASCII 81: Q */   GLYPHS_CHAR_Q(X), \
-        /* ASCII 82: R */   GLYPHS_CHAR_R(X), \
-        /* ASCII 83: S */   GLYPHS_CHAR_S(X), \
-        /* ASCII 84: T */   GLYPHS_CHAR_T(X), \
-        /* ASCII 85: U */   GLYPHS_CHAR_U(X), \
-        /* ASCII 86: V */   GLYPHS_CHAR_V(X), \
-        /* ASCII 87: W */   GLYPHS_CHAR_W(X), \
-        /* ASCII 88: X */   GLYPHS_CHAR_X(X), \
-        /* ASCII 89: Y */   GLYPHS_CHAR_Y(X), \
-        /* ASCII 90: Z */   GLYPHS_CHAR_Z(X), \
+        /* ASCII 65: A */   GLYPHS_CHAR_UPPER_A(X), \
+        /* ASCII 66: B */   GLYPHS_CHAR_UPPER_B(X), \
+        /* ASCII 67: C */   GLYPHS_CHAR_UPPER_C(X), \
+        /* ASCII 68: D */   GLYPHS_CHAR_UPPER_D(X), \
+        /* ASCII 69: E */   GLYPHS_CHAR_UPPER_E(X), \
+        /* ASCII 70: F */   GLYPHS_CHAR_UPPER_F(X), \
+        /* ASCII 71: G */   GLYPHS_CHAR_UPPER_G(X), \
+        /* ASCII 72: H */   GLYPHS_CHAR_UPPER_H(X), \
+        /* ASCII 73: I */   GLYPHS_CHAR_UPPER_I(X), \
+        /* ASCII 74: J */   GLYPHS_CHAR_UPPER_J(X), \
+        /* ASCII 75: K */   GLYPHS_CHAR_UPPER_K(X), \
+        /* ASCII 76: L */   GLYPHS_CHAR_UPPER_L(X), \
+        /* ASCII 77: M */   GLYPHS_CHAR_UPPER_M(X), \
+        /* ASCII 78: N */   GLYPHS_CHAR_UPPER_N(X), \
+        /* ASCII 79: O */   GLYPHS_CHAR_UPPER_O(X), \
+        /* ASCII 80: P */   GLYPHS_CHAR_UPPER_P(X), \
+        /* ASCII 81: Q */   GLYPHS_CHAR_UPPER_Q(X), \
+        /* ASCII 82: R */   GLYPHS_CHAR_UPPER_R(X), \
+        /* ASCII 83: S */   GLYPHS_CHAR_UPPER_S(X), \
+        /* ASCII 84: T */   GLYPHS_CHAR_UPPER_T(X), \
+        /* ASCII 85: U */   GLYPHS_CHAR_UPPER_U(X), \
+        /* ASCII 86: V */   GLYPHS_CHAR_UPPER_V(X), \
+        /* ASCII 87: W */   GLYPHS_CHAR_UPPER_W(X), \
+        /* ASCII 88: X */   GLYPHS_CHAR_UPPER_X(X), \
+        /* ASCII 89: Y */   GLYPHS_CHAR_UPPER_Y(X), \
+        /* ASCII 90: Z */   GLYPHS_CHAR_UPPER_Z(X), \
         /* ASCII 91 */      0, \
         /* ASCII 92: \ */   GLYPHS_CHAR_BACKSLASH(X), \
         /* ASCII 93-94 */   0, 0, \
