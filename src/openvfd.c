@@ -8,6 +8,8 @@ static int openvfd_fd = -1;
 static unsigned short openvfd_glyphs_lookup_id = 0;
 static unsigned short openvfd_dots_lookup_id = 0;
 static bool openvfd_char_no_lookup = false;
+static uint8_t openvfd_colon_add = 0;
+static uint8_t openvfd_colon_remove = 0;
 
 struct openvfd_write_sequence {
     uint8_t dots;
@@ -74,6 +76,8 @@ int openvfd_prepare() {
     if (display.controller > OPENVFD_CONTROLLER_7S_MAX) {
         openvfd_char_no_lookup = true;
     }
+    openvfd_colon_add = dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
+    openvfd_colon_remove = ~dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
     pr_debug("Using glyphs lookup id %d, dots lookup %d, char no lookup: %s\n", openvfd_glyphs_lookup_id, openvfd_dots_lookup_id, openvfd_char_no_lookup ? "yes" : "no");
     return 0;
 }
@@ -90,10 +94,10 @@ void openvfd_write_report(uint32_t word, uint8_t dots, bool const blink) {
     if (blink) {
         static bool colon = true;
         if (colon) {
-            sequence.dots |= dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
+            sequence.dots |= openvfd_colon_add;
             colon = false;
         } else {
-            sequence.dots |= ~dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
+            sequence.dots &= openvfd_colon_remove;
             colon = true;
         }
     }
