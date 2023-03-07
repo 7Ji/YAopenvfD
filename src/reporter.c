@@ -158,7 +158,7 @@ int reporter_loop(struct reporter *const reporter_head, struct watcher *const wa
                 if (blink || word_this != word_last || dots_this != dots_last) {
                     word_last = word_this;
                     dots_last = dots_this;
-                    if (openvfd_write_report(word_this, reporter->dots, blink)) {
+                    if (openvfd_write_report(word_this, dots_this, blink)) {
                         pr_error("Failed to write report to OpenVFD dev\n");
                         return 4;
                     }
