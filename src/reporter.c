@@ -1,6 +1,8 @@
 #include "reporter.h"
 #include "openvfd.h"
 
+#define REPORTER_TYPE_MAX REPORTER_TYPE_NET
+
 static const char reporter_type_strings[][7] = {
     "",
     "string",
@@ -122,33 +124,7 @@ struct reporter *reporter_parse_argument(char const *const arg) {
     temp[len] = '\0';
     enum reporter_type const reporter_type = reporter_get_type_from_string(temp);
     struct collector collector = {0};
-#ifdef COLLECTOR_REPORTER_MISMATCH
-    switch (reporter_type) {
-    case REPORTER_TYPE_STRING:
-        collector.type = COLLECTOR_TYPE_STRING;
-        break;
-    case REPORTER_TYPE_TEMP:
-        collector.type = COLLECTOR_TYPE_TEMP;
-        break;
-    case REPORTER_TYPE_IO:
-        collector.type = COLLECTOR_TYPE_IO;
-        break;
-    case REPORTER_TYPE_CPU:
-        collector.type = COLLECTOR_TYPE_CPU;
-        break;
-    case REPORTER_TYPE_NET:
-        collector.type = COLLECTOR_TYPE_NET;
-        break;
-    case REPORTER_TYPE_TIME:
-        collector.type = COLLECTOR_TYPE_TIME;
-        break;
-    case REPORTER_TYPE_DATE:
-        collector.type = COLLECTOR_TYPE_DATE;
-        break;
-    default:
-#else
     if (!(collector.type = (enum collector_type) reporter_type)) {
-#endif
         pr_error("Argument does not define valid reporter type: '%s'\n", arg);
         return NULL;
     }
@@ -156,9 +132,6 @@ struct reporter *reporter_parse_argument(char const *const arg) {
         pr_error("Failed to parse argument into collector definition: '%s'\n", arg);
         return NULL;
     }
-    // len = reporter_parse_argument_safe_len(seps[0] - arg);
-    // strncpy(temp, arg, len);
-    // temp[len] = '\0';
     unsigned long const duration = strtoul(arg, NULL, 10);
     struct reporter *reporter = malloc(sizeof *reporter);
     if (!reporter) {

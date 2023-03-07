@@ -1,10 +1,13 @@
 #include "dots.h"
 
+#define DOTS_TYPE_MAX   DOTS_TYPE_AV
+
 #define DOTS_SETUP(TYPE, BIT) \
     [DOTS_TYPE_ ##TYPE] = 1 << (BIT - 1)
 
-char const dots_type_strings[][10] = {
-    "alarm"
+char const dots_type_strings[][7] = {
+    "",
+    "alarm",
     "usb",
     "play",
     "pause",
@@ -61,3 +64,15 @@ uint8_t const dots_lookup_table[][DOTS_TYPE_AV+1] = {
         DOTS_SETUP(AV, 7)
     }
 };
+
+enum dots_type dots_get_type_from_string(char const *const string) {
+    if (!string || !string[0]) {
+        return DOTS_TYPE_NONE;
+    }
+    for (enum dots_type type = DOTS_TYPE_NONE + 1; type <= DOTS_TYPE_MAX; ++type) {
+        if (!strcmp(dots_type_strings[type], string)) {
+            return type;
+        }
+    }
+    return DOTS_TYPE_NONE;
+}

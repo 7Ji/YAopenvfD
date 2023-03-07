@@ -14,8 +14,6 @@ enum reporter_type {
     REPORTER_TYPE_DATE
 };
 
-#define REPORTER_TYPE_MAX REPORTER_TYPE_NET
-
 struct reporter {
     struct reporter *next;
     enum reporter_type type;
