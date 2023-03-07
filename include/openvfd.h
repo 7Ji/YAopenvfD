@@ -1,6 +1,7 @@
 #ifndef _HAVE_OPENVFD_H
 #define _HAVE_OPENVFD_H
 #include "common.h"
+#include "dots.h"
 #include <sys/ioctl.h>
 /* Use 'M' as magic number */
 #define OPENVFD_IOC_MAGIC           'M'
@@ -126,6 +127,7 @@ enum openvfd_fd628_brightness {   /* FD628 Brightness levels */
 };
 
 int openvfd_prepare();
+uint8_t openvfd_lookup_dots(enum dots_type type);
 void openvfd_write_report(uint32_t word, uint8_t dots, bool const blink);
 
 #endif

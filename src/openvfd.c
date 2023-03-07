@@ -1,6 +1,5 @@
 #include "openvfd.h"
 #include "glyphs.h"
-#include "dots.h"
 #include <fcntl.h>
 #define OPENVFD_NAME    "openvfd"
 #define OPENVFD_DEV     "/dev/" OPENVFD_NAME
@@ -77,6 +76,10 @@ int openvfd_prepare() {
     }
     pr_debug("Using glyphs lookup id %d, dots lookup %d, char no lookup: %s\n", openvfd_glyphs_lookup_id, openvfd_dots_lookup_id, openvfd_char_no_lookup ? "yes" : "no");
     return 0;
+}
+
+uint8_t openvfd_lookup_dots(enum dots_type const type) {
+    return dots_lookup_table[openvfd_dots_lookup_id][type];
 }
 
 void openvfd_write_report(uint32_t word, uint8_t dots, bool const blink) {

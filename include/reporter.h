@@ -2,6 +2,7 @@
 #define _HAVE_REPORTER_H
 #include "common.h"
 #include "collector.h"
+#include "dots.h"
 
 enum reporter_type {
     REPORTER_TYPE_NONE,
@@ -19,6 +20,7 @@ struct reporter {
     enum reporter_type type;
     struct collector collector;
     unsigned duration_second;
+    enum dots_type dots_type;
     uint8_t dots;
 };
 

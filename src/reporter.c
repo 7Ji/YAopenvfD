@@ -46,6 +46,7 @@ struct reporter *reporter_parse_argument(char const *const arg) {
         return NULL;
     }
     char const *seps[REPORTER_PARSE_ARGUMENT_MAX_SEP] = {NULL};
+    char const *dots = NULL;
     char const *end = NULL;
     unsigned sep_id = 0;
     for (char const *c = arg; !end; ++c) {
@@ -53,6 +54,11 @@ struct reporter *reporter_parse_argument(char const *const arg) {
         case ':':
             if (sep_id < REPORTER_PARSE_ARGUMENT_MAX_SEP) {
                 seps[sep_id++] = c;
+            }
+            break;
+        case '@':
+            if (!sep_id) {
+                dots = c + 1;
             }
             break;
         case '\0':
@@ -75,11 +81,24 @@ struct reporter *reporter_parse_argument(char const *const arg) {
     strncpy(temp, seps[0] + 1, len);
     temp[len] = '\0';
     enum reporter_type const reporter_type = reporter_get_type_from_string(temp);
-    struct collector collector = {0};
-    if (!(collector.type = (enum collector_type) reporter_type)) {
+    if (!reporter_type) {
         pr_error("Argument does not define valid reporter type: '%s'\n", arg);
         return NULL;
     }
+    enum dots_type dots_type;
+    if (dots) {
+        len = reporter_parse_argument_safe_len(seps[0] - dots);
+        strncpy(temp, dots, len);
+        temp[len] = '\0';
+        if (!(dots_type = dots_get_type_from_string(temp))) {
+            pr_error("Argument does not define valid dots type: '%s'\n", arg);
+            return NULL;
+        }
+    } else {
+        dots_type = DOTS_TYPE_NONE;
+    }
+    struct collector collector = {0};
+    collector.type = (enum collector_type) reporter_type;
     if (collector_parse_argument(&collector, arg, seps, sep_id, end)) {
         pr_error("Failed to parse argument into collector definition: '%s'\n", arg);
         return NULL;
@@ -95,6 +114,7 @@ struct reporter *reporter_parse_argument(char const *const arg) {
     reporter->next = NULL;
     reporter->type = reporter_type;
     reporter->collector = collector;
+    reporter->dots_type = dots_type;
     return reporter;
 }
 
@@ -111,6 +131,7 @@ int reporter_prepare(struct reporter *const reporter_head) {
         } else {
             pr_warn("Initialized collector for reporter type %d(%s) duration %u\n", reporter->type, reporter_get_type_string(reporter->type), reporter->duration_second);
         }
+        reporter->dots = openvfd_lookup_dots(reporter->dots_type);
     }
     return 0;
 }
