@@ -91,7 +91,7 @@ int collector_net_parse(struct collector_net *const collector) {
             pr_error_with_errno("Failed to read into buffer for parse of Rx stat for interface '%s'", collector->interface);
             return 4;
         }
-        collector->tx_this = strtoul(buffer, NULL, 10);
+        collector->rx_this = strtoul(buffer, NULL, 10);
     }
     return 0;
 }
