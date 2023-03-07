@@ -77,7 +77,7 @@ int collector_date_report(struct collector_date *const collector, char report[CO
         r = snprintf(report, COLLECTOR_REPORT_SIZE, "%02d%02d", tm_now.tm_hour % 12, tm_now.tm_min);
         break;
     case COLLECTOR_DATE_TYPE_YEAR:
-        r = snprintf(report, COLLECTOR_REPORT_SIZE, "%04d", tm_now.tm_year);
+        r = snprintf(report, COLLECTOR_REPORT_SIZE, "%04d", tm_now.tm_year + 1900);
         break;
     case COLLECTOR_DATE_TYPE_YEAR_MONTH:
         r = snprintf(report, COLLECTOR_REPORT_SIZE, "%02d%02d", (tm_now.tm_year + 1900) % 1000, tm_now.tm_mon + 1);
