@@ -133,7 +133,11 @@ int openvfd_prepare() {
 }
 
 uint8_t openvfd_lookup_dots(enum dots_type const type) {
-    return 1 << dots_bit_map_table[dots_lookup_table[openvfd_dots_lookup_id][type]];
+    if (type) {
+        return 1 << dots_bit_map_table[dots_lookup_table[openvfd_dots_lookup_id][type]];
+    } else {
+        return 0;
+    }
 }
 
 int openvfd_write_report(uint32_t word, uint8_t dots, bool const blink) {
