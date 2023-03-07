@@ -120,6 +120,7 @@ struct reporter *reporter_parse_argument(char const *const arg) {
     temp[len] = '\0';
     enum reporter_type const reporter_type = reporter_get_type_from_string(temp);
     struct collector collector = {0};
+#ifdef COLLECTOR_REPORTER_MISMATCH
     switch (reporter_type) {
     case REPORTER_TYPE_STRING:
         collector.type = COLLECTOR_TYPE_STRING;
@@ -143,6 +144,9 @@ struct reporter *reporter_parse_argument(char const *const arg) {
         collector.type = COLLECTOR_TYPE_DATE;
         break;
     default:
+#else
+    if (!(collector.type = (enum collector_type) reporter_type)) {
+#endif
         pr_error("Argument does not define valid reporter type: '%s'\n", arg);
         return NULL;
     }
