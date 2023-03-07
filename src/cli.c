@@ -11,7 +11,7 @@ static inline void cli_help() {
         "  [reporter]:\t[duration](@[dot]):[type](:[definer])\n"
         "\t\t  define a reporter that should be displayed for a certain duration, during which optionally keep a dot on\n"
         "    [duration]:\tduration of this reporter, in second, non-negative (0 for forever)\n"
-        "    [dot]:\tname of the dot that should be kept on during this reporter (e.g. usb, eth, etc) or no. of bit (0-7)\n"
+        "    [dot]:\tname of the dot that should be kept on during this reporter (e.g. usb, eth, etc)\n"
         "    [type]:\tone of the following (and corresponding definer):\n"
         "      string:\tdisplay string in definer, scroll if too long\n"
         "      temp:\tdisplay temp in thermal zone N defined in definer (0 is usually for CPU), in celcius\n"
