@@ -5,8 +5,8 @@
 
 static const char collector_date_type_strings[][11] = {
     "",
-    "12h",
     "24h",
+    "12h",
     "year",
     "year+month",
     "month+year",
