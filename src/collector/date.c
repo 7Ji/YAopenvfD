@@ -123,7 +123,7 @@ int collector_date_report(struct collector_date *const collector, char report[CO
         pr_error("Date collector type not defined, this should not happen\n");
         return 4;
     }
-    if (r) {
+    if (r < 0) {
         pr_error("Failed to report date\n");
         return 5;
     }
