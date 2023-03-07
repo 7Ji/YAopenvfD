@@ -1,5 +1,5 @@
 <!--
-YAopenvfD/src/reporter.c: logic to report time/date/io/string/etc
+YAopenvfD/README.md: project introduction
 Copyright (C) 2023 Guoxin "7Ji" Pu <pugokushin@gmail.com>
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -142,7 +142,34 @@ YAopenvfD [reporter] ([reporter] ([reporter] (...))) [watcher] ([watcher] ([watc
       - Turn on LED dot `play` if special file `sda` exists under `/dev` and off if not (This is the first external block device since the box has no native SCSI block device, it essentialy watches for external USB drive)
       - Turn on LED dot `pause` if special file `ttyUSB0` exists under `/dev` and off if not (This is the first USB serial device)
     
-    
+## Download
+You can download release build on [release page](../releases)
+
+You can also download staticly linked binaries automatically built on each push, just click the green `√` the top middle of this page. **These are development builds and there might be dangerous**
+
+## Build
+Just clone and repo run `make`
+ 1. Clone the repo
+    ```
+    git clone https://github.com/7Ji/YAopenvfD
+    ```
+ 2. Enter the folder
+    ```
+    cd YAopenvfD
+    ```
+ 3. Build the binary
+    ```
+    make
+    ```
+
+## License
+**YAopenvfD** (**Y**et **A**nother **openvf**d **D**aemon) is licensed under [**GPL3**](https://gnu.org/licenses/gpl.html)
+ * Copyright (C) 2023 Guoxin "7Ji" Pu (pugokushin@gmail.com)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
 [linux_openvfd]: https://github.com/arthur-liberman/linux_openvfd
