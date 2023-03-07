@@ -173,6 +173,9 @@ struct watcher *wacher_parse_argument(char const *const arg) {
         pr_error("Failed to parse argument into watcher definition\n");
         return NULL;
     }
+    watcher->next = NULL;
+    watcher->type = watcher_type;
+    watcher->dots_type = dots_type; 
     return watcher;
 }
 
