@@ -26,6 +26,8 @@ enum dots_type {
 };
 
 // extern char const dots_type_strings[][10];
+extern uint8_t dots_bit_map_table[];
 extern uint8_t const dots_lookup_table[][DOTS_TYPE_AV+1];
 enum dots_type dots_get_type_from_string(char const *string);
+int dots_set_order(char const *arg);
 #endif
