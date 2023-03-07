@@ -94,30 +94,31 @@ int collector_date_report(struct collector_date *const collector, char report[CO
     case COLLECTOR_DATE_TYPE_WEEKDAY:
         switch (tm_now.tm_wday) {
             case 0:
-                strncpy(report, "Sund", COLLECTOR_REPORT_SIZE);
+                strncpy(report, "SUN", COLLECTOR_REPORT_SIZE);
                 break;
             case 1:
-                strncpy(report, "Mond", COLLECTOR_REPORT_SIZE);
+                strncpy(report, "MON", COLLECTOR_REPORT_SIZE);
                 break;
             case 2:
-                strncpy(report, "Tues", COLLECTOR_REPORT_SIZE);
+                strncpy(report, "TUE", COLLECTOR_REPORT_SIZE);
                 break;
             case 3:
-                strncpy(report, "Wedn", COLLECTOR_REPORT_SIZE);
+                strncpy(report, "WED", COLLECTOR_REPORT_SIZE);
                 break;
             case 4:
-                strncpy(report, "Thur", COLLECTOR_REPORT_SIZE);
+                strncpy(report, "THU", COLLECTOR_REPORT_SIZE);
                 break;
             case 5:
-                strncpy(report, "Frid", COLLECTOR_REPORT_SIZE);
+                strncpy(report, "FRI", COLLECTOR_REPORT_SIZE);
                 break;
             case 6:
-                strncpy(report, "Satu", COLLECTOR_REPORT_SIZE);
+                strncpy(report, "SAT", COLLECTOR_REPORT_SIZE);
                 break;
             default:
                 pr_error("Unexpected week day: %d\n", tm_now.tm_wday);
                 return 3;
         }
+        r = snprintf(report + 3, 2, "%1d", tm_now.tm_wday);
         break;
     default:
         pr_error("Date collector type not defined, this should not happen\n");
