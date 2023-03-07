@@ -106,14 +106,14 @@ int collector_net_prepare(struct collector_net *const collector) {
 
 int collector_net_report(struct collector_net *const collector, char report[COLLECTOR_REPORT_SIZE]) {
     collector->tx_last = collector->tx_this;
-    collector->rx_last = collector->rx_last;
+    collector->rx_last = collector->rx_this;
     if (collector_net_parse(collector)) {
         pr_error("Failed to parse network interface stat for '%s' for report\n", collector->interface);
         return 1;
     }
     unsigned long diff = 0;
     if (collector->tx_parse) {
-        diff = diff + collector->tx_this - collector->rx_this;
+        diff = diff + collector->tx_this - collector->tx_last;
     }
     if (collector->rx_parse) {
         diff = diff + collector->rx_this - collector->rx_last;
