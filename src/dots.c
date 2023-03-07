@@ -32,8 +32,8 @@ uint8_t const dots_lookup_table[][DOTS_TYPE_AV+1] = {
     {
         DOTS_SETUP(ALARM, 1),
         DOTS_SETUP(USB, 2),
-        DOTS_SETUP(PLAY, 3),
-        DOTS_SETUP(PAUSE, 4),
+        DOTS_SETUP(PAUSE, 3),
+        DOTS_SETUP(PLAY, 4),
         DOTS_SETUP(SEC, 5),
         DOTS_SETUP(ETH, 6),
         DOTS_SETUP(WIFI, 7)
