@@ -122,13 +122,12 @@ int openvfd_prepare() {
         default:
             openvfd_dots_lookup_id = 0;
             break;
-
     }
     if (display.controller > OPENVFD_CONTROLLER_7S_MAX) {
         openvfd_char_no_lookup = true;
     }
-    openvfd_colon_add = dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
-    openvfd_colon_remove = ~dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
+    openvfd_colon_add = 1 << dots_bit_map_table[dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC]];
+    openvfd_colon_remove = ~(1 << dots_bit_map_table[dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC]]);
     pr_debug("Using glyphs lookup id %d, dots lookup %d, char no lookup: %s\n", openvfd_glyphs_lookup_id, openvfd_dots_lookup_id, openvfd_char_no_lookup ? "yes" : "no");
     return 0;
 }
