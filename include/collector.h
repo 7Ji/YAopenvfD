@@ -81,9 +81,6 @@ struct collector {
     };
 };
 
-// int collector_io(struct collector_io *collector);
-
-// enum collector_type collector_type_from_reporter_type(enum reporter_type type);
 int collector_init(struct collector collector);
 int collector_prepare(struct collector collector);
 int collector_report(struct collector collector, char report[5]);
