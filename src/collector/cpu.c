@@ -184,7 +184,7 @@ int collector_cpu_report(struct collector_cpu *const collector, char report[COLL
     if (percent >= 100) {
         strcpy(report, "100%");
     } else {
-        snprintf(report, 5, "%2hu o", percent);
+        snprintf(report, COLLECTOR_REPORT_SIZE, "%2hu o", percent);
         report[2] = 0xb0;
     }
     return 0;

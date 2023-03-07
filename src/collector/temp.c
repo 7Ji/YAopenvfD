@@ -46,9 +46,9 @@ int collector_temp_report(struct collector_temp *const collector, char report[CO
     if (temp >= 1000000) {
         strcpy(report, "xxxx");
     } else if (temp >= 100000) {
-        snprintf(report, 5, "%3luC", temp / 1000);
+        snprintf(report, COLLECTOR_REPORT_SIZE, "%3luC", temp / 1000);
     } else {
-        snprintf(report, 5, "%2lu C", temp / 1000);
+        snprintf(report, COLLECTOR_REPORT_SIZE, "%2lu C", temp / 1000);
         report[2] = 0xb0;
     }
     return 0;

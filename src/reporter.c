@@ -12,7 +12,6 @@ static const char reporter_type_strings[][7] = {
     "io",
     "cpu",
     "net",
-    "time",
     "date"
 };
 

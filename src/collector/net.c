@@ -120,7 +120,7 @@ int collector_net_report(struct collector_net *const collector, char report[COLL
     }
     char suffix;
     diff = collector_size_to_human_readable(diff, &suffix);
-    if (snprintf(report, 5, "%3lu%c", diff, suffix) < 0) {
+    if (snprintf(report, COLLECTOR_REPORT_SIZE, "%3lu%c", diff, suffix) < 0) {
         pr_error_with_errno("Failed to generate report string for human-readable size %lu%c\n", diff, suffix);
         return 3;
     }
