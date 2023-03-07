@@ -4,8 +4,7 @@
 #include "collector/io.h"
 #include "collector/cpu.h"
 #include "collector/net.h"
-
-#include <fcntl.h>
+#include "collector/date.h"
 
 static const unsigned collector_parse_argument_minium_sep_count[] = {
     (unsigned)-1, // None
@@ -14,6 +13,7 @@ static const unsigned collector_parse_argument_minium_sep_count[] = {
     3,  // IO
     1,  // CPU
     3,  // Net
+    2,  // Date
 };
 
 int collector_init(struct collector const collector) {
@@ -28,6 +28,8 @@ int collector_init(struct collector const collector) {
         return collector_cpu_init(collector.cpu);
     case COLLECTOR_TYPE_NET:
         return collector_net_init(collector.net);
+    case COLLECTOR_TYPE_DATE:
+        return 0;
     default:
         pr_error("Unexpected collector type %d\n", collector.type);
         return -1;
@@ -46,13 +48,15 @@ int collector_prepare(struct collector const collector) {
         return collector_cpu_prepare(collector.cpu);
     case COLLECTOR_TYPE_NET:
         return collector_net_prepare(collector.net);
+    case COLLECTOR_TYPE_DATE:
+        return 0;
     default:
         pr_error("Unexpected collector type %d\n", collector.type);
         return -1;
     }
 }
 
-int collector_report(struct collector const collector, char report[5]) {
+int collector_report(struct collector const collector, char report[COLLECTOR_REPORT_SIZE]) {
     switch (collector.type) {
     case COLLECTOR_TYPE_STRING:
         return collector_string_report(collector.string, report);
@@ -64,6 +68,8 @@ int collector_report(struct collector const collector, char report[5]) {
         return collector_cpu_report(collector.cpu, report);
     case COLLECTOR_TYPE_NET:
         return collector_net_report(collector.net, report);
+    case COLLECTOR_TYPE_DATE:
+        return collector_date_report(collector.date, report);
     default:
         pr_error("Unexpected collector type %d\n", collector.type);
         return -1;
@@ -94,6 +100,9 @@ int collector_parse_argument(struct collector *collector, char const *const arg,
         break;
     case COLLECTOR_TYPE_NET:
         collector->net = collector_parse_argument_net(seps[1], seps[2], end);
+        break;
+    case COLLECTOR_TYPE_DATE:
+        collector->date = collector_parse_argument_date(seps[1] + 1, end);
         break;
     default:
         pr_error("Collector type not set: '%s'\n", arg);

@@ -11,7 +11,6 @@ enum reporter_type {
     REPORTER_TYPE_IO,
     REPORTER_TYPE_CPU,
     REPORTER_TYPE_NET,
-    REPORTER_TYPE_TIME,
     REPORTER_TYPE_DATE
 };
 

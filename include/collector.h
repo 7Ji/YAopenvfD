@@ -11,7 +11,6 @@ enum collector_type {
     COLLECTOR_TYPE_IO,
     COLLECTOR_TYPE_CPU,
     COLLECTOR_TYPE_NET,
-    COLLECTOR_TYPE_TIME,
     COLLECTOR_TYPE_DATE
 };
 
@@ -75,6 +74,19 @@ struct collector_net {
     unsigned long rx_this;
 };
 
+enum collector_date_type {
+    COLLECTOR_DATE_TYPE_24H,
+    COLLECTOR_DATE_TYPE_12H,
+    COLLECTOR_DATE_TYPE_YYYY,
+    COLLECTOR_DATE_TYPE_MMDD,
+    COLLECTOR_DATE_TYPE_DDMM
+};
+
+struct collector_date {
+    enum collector_date_type type;
+    bool blink;
+};
+
 struct collector {
     enum collector_type type;
     union {
@@ -84,6 +96,7 @@ struct collector {
         struct collector_io *io;
         struct collector_cpu *cpu;
         struct collector_net *net;
+        struct collector_date *date;
     };
 };
 

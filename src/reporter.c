@@ -142,7 +142,7 @@ int reporter_loop(struct reporter *reporter_head) {
     while (true) {
         for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
             unsigned remaining_second = reporter->duration_second;
-            bool blink = reporter->type == REPORTER_TYPE_TIME;
+            bool blink = reporter->type == REPORTER_TYPE_DATE && reporter->collector.date->blink;
             bool dots_update = reporter->dots != dots_last;
             collector_prepare(reporter->collector);
             while (true) {
