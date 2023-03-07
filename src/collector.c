@@ -27,7 +27,7 @@ int collector_init(struct collector const collector) {
     case COLLECTOR_TYPE_CPU:
         return collector_cpu_init(collector.cpu);
     case COLLECTOR_TYPE_NET:
-        return 0;
+        return collector_net_init(collector.net);
     default:
         pr_error("Unexpected collector type %d\n", collector.type);
         return -1;
@@ -45,7 +45,7 @@ int collector_prepare(struct collector const collector) {
     case COLLECTOR_TYPE_CPU:
         return collector_cpu_prepare(collector.cpu);
     case COLLECTOR_TYPE_NET:
-        return 0;
+        return collector_net_prepare(collector.net);
     default:
         pr_error("Unexpected collector type %d\n", collector.type);
         return -1;
@@ -63,7 +63,7 @@ int collector_report(struct collector const collector, char report[5]) {
     case COLLECTOR_TYPE_CPU:
         return collector_cpu_report(collector.cpu, report);
     case COLLECTOR_TYPE_NET:
-        return 0;
+        return collector_net_report(collector.net, report);
     default:
         pr_error("Unexpected collector type %d\n", collector.type);
         return -1;

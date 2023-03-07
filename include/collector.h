@@ -67,6 +67,12 @@ struct collector_net {
     int tx_fd;
     int rx_fd;
     enum collector_net_type type;
+    bool tx_parse;
+    bool rx_parse;
+    unsigned long tx_last;
+    unsigned long tx_this;
+    unsigned long rx_last;
+    unsigned long rx_this;
 };
 
 struct collector {
