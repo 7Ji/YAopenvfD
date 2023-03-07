@@ -143,7 +143,7 @@ YAopenvfD [reporter] ([reporter] ([reporter] (...))) [watcher] ([watcher] ([watc
       - Turn on LED dot `pause` if special file `ttyUSB0` exists under `/dev` and off if not (This is the first USB serial device)
     
 ## Download
-You can download release build on [release page](../releases)
+You can download release build on [release page](../../releases)
 
 You can also download staticly linked binaries automatically built on each push, just click the green `√` the top middle of this page. **These are development builds and there might be dangerous**
 
