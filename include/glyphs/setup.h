@@ -57,32 +57,32 @@
         /* ASCII 93-94 */   0, 0, \
         /* ASCII 95: _ */   GLYPHS_CHAR_LOW_LINE(X), \
         /* ASCII 96    */   0, \
-        /* ASCII 97: a */   GLYPHS_CHAR_A(X), \
-        /* ASCII 98: b */   GLYPHS_CHAR_B(X), \
-        /* ASCII 99: c */   GLYPHS_CHAR_C(X), \
-        /* ASCII 100: d */  GLYPHS_CHAR_D(X), \
-        /* ASCII 101: e */  GLYPHS_CHAR_E(X), \
-        /* ASCII 102: f */  GLYPHS_CHAR_F(X), \
-        /* ASCII 103: g */  GLYPHS_CHAR_G(X), \
-        /* ASCII 104: h */  GLYPHS_CHAR_H(X), \
-        /* ASCII 105: i */  GLYPHS_CHAR_I(X), \
-        /* ASCII 106: j */  GLYPHS_CHAR_J(X), \
-        /* ASCII 107: k */  GLYPHS_CHAR_K(X), \
-        /* ASCII 108: l */  GLYPHS_CHAR_L(X), \
-        /* ASCII 109: m */  GLYPHS_CHAR_M(X), \
-        /* ASCII 110: n */  GLYPHS_CHAR_N(X), \
-        /* ASCII 111: o */  GLYPHS_CHAR_O(X), \
-        /* ASCII 112: p */  GLYPHS_CHAR_P(X), \
-        /* ASCII 113: q */  GLYPHS_CHAR_Q(X), \
-        /* ASCII 114: r */  GLYPHS_CHAR_R(X), \
-        /* ASCII 115: s */  GLYPHS_CHAR_S(X), \
-        /* ASCII 116: t */  GLYPHS_CHAR_T(X), \
-        /* ASCII 117: u */  GLYPHS_CHAR_U(X), \
-        /* ASCII 118: v */  GLYPHS_CHAR_V(X), \
-        /* ASCII 119: w */  GLYPHS_CHAR_W(X), \
-        /* ASCII 120: x */  GLYPHS_CHAR_X(X), \
-        /* ASCII 121: y */  GLYPHS_CHAR_Y(X), \
-        /* ASCII 122: z */  GLYPHS_CHAR_Z(X), \
+        /* ASCII 97: a */   GLYPHS_CHAR_LOWER_A(X), \
+        /* ASCII 98: b */   GLYPHS_CHAR_LOWER_B(X), \
+        /* ASCII 99: c */   GLYPHS_CHAR_LOWER_C(X), \
+        /* ASCII 100: d */  GLYPHS_CHAR_LOWER_D(X), \
+        /* ASCII 101: e */  GLYPHS_CHAR_LOWER_E(X), \
+        /* ASCII 102: f */  GLYPHS_CHAR_LOWER_F(X), \
+        /* ASCII 103: g */  GLYPHS_CHAR_LOWER_G(X), \
+        /* ASCII 104: h */  GLYPHS_CHAR_LOWER_H(X), \
+        /* ASCII 105: i */  GLYPHS_CHAR_LOWER_I(X), \
+        /* ASCII 106: j */  GLYPHS_CHAR_LOWER_J(X), \
+        /* ASCII 107: k */  GLYPHS_CHAR_LOWER_K(X), \
+        /* ASCII 108: l */  GLYPHS_CHAR_LOWER_L(X), \
+        /* ASCII 109: m */  GLYPHS_CHAR_LOWER_M(X), \
+        /* ASCII 110: n */  GLYPHS_CHAR_LOWER_N(X), \
+        /* ASCII 111: o */  GLYPHS_CHAR_LOWER_O(X), \
+        /* ASCII 112: p */  GLYPHS_CHAR_LOWER_P(X), \
+        /* ASCII 113: q */  GLYPHS_CHAR_LOWER_Q(X), \
+        /* ASCII 114: r */  GLYPHS_CHAR_LOWER_R(X), \
+        /* ASCII 115: s */  GLYPHS_CHAR_LOWER_S(X), \
+        /* ASCII 116: t */  GLYPHS_CHAR_LOWER_T(X), \
+        /* ASCII 117: u */  GLYPHS_CHAR_LOWER_U(X), \
+        /* ASCII 118: v */  GLYPHS_CHAR_LOWER_V(X), \
+        /* ASCII 119: w */  GLYPHS_CHAR_LOWER_W(X), \
+        /* ASCII 120: x */  GLYPHS_CHAR_LOWER_X(X), \
+        /* ASCII 121: y */  GLYPHS_CHAR_LOWER_Y(X), \
+        /* ASCII 122: z */  GLYPHS_CHAR_LOWER_Z(X), \
         /* ASCII 123-129 */ 0, 0, 0, 0, 0, 0, 0, \
         /* ASCII 130-139 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
         /* ASCII 140-149 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
