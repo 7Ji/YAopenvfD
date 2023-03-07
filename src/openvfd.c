@@ -79,28 +79,20 @@ int openvfd_prepare() {
     return 0;
 }
 
-void openvfd_write_report(char const report[5], bool const blink) {
-    static struct openvfd_write_sequence sequence = {0};
-// #ifdef DEBUGGING
-//     sequence.dots = 
-//         dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_ALARM] |
-//         dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_USB] |
-//         dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_PLAY] |
-//         dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_PAUSE] |
-//         dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC] |dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_ETH] |
-//         dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_WIFI];
-// #endif
+void openvfd_write_report(uint32_t word, uint8_t dots, bool const blink) {
+    struct openvfd_write_sequence sequence = {0};
+    char report[4];
+    *((uint32_t *)report) = word;
+    sequence.dots = dots;
     if (blink) {
         static bool colon = true;
         if (colon) {
-            sequence.dots = dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
+            sequence.dots |= dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
             colon = false;
         } else {
-            sequence.dots = 0;
+            sequence.dots |= ~dots_lookup_table[openvfd_dots_lookup_id][DOTS_TYPE_SEC];
             colon = true;
         }
-    } else {
-        sequence.dots = 0;
     }
     if (openvfd_char_no_lookup) {
         sequence.char_1 = report[0];

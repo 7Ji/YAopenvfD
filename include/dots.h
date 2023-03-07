@@ -3,6 +3,7 @@
 #include "common.h"
 
 enum dots_type {
+    DOTS_TYPE_NONE,
     DOTS_TYPE_ALARM,
     DOTS_TYPE_USB,
     DOTS_TYPE_PLAY,

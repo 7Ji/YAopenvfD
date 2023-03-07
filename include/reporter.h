@@ -9,7 +9,9 @@ enum reporter_type {
     REPORTER_TYPE_TEMP,
     REPORTER_TYPE_IO,
     REPORTER_TYPE_CPU,
-    REPORTER_TYPE_NET
+    REPORTER_TYPE_NET,
+    REPORTER_TYPE_TIME,
+    REPORTER_TYPE_DATE
 };
 
 #define REPORTER_TYPE_MAX REPORTER_TYPE_NET
@@ -19,10 +21,9 @@ struct reporter {
     enum reporter_type type;
     struct collector collector;
     unsigned duration_second;
+    uint8_t dots;
 };
 
-// enum reporter_type reporter_type_from_collector_type(enum collector_type type);
-// char const *reporter_get_type_string(enum reporter_type type);
 struct reporter *reporter_parse_argument(char const *arg);
 int reporter_prepare(struct reporter *reporter_head);
 int reporter_loop(struct reporter *reporter_head);

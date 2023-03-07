@@ -44,24 +44,28 @@ int reporter_prepare(struct reporter *const reporter_head) {
 }
 
 int reporter_loop(struct reporter *reporter_head) {
-    uint32_t last = 0;
+    uint32_t word_last = 0;
+    uint8_t dots_last = 0;
     while (true) {
         for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
             unsigned remaining_second = reporter->duration_second;
+            bool blink = reporter->type == REPORTER_TYPE_TIME;
             collector_prepare(reporter->collector);
             while (true) {
                 sleep(1);
-                char buffer[128];
+                char buffer[5];
                 collector_report(reporter->collector, buffer);
-                if (*(uint32_t *)buffer != last) {
-                    last = *(uint32_t *)buffer;
-                    openvfd_write_report(buffer, false);
+                uint32_t word_this = *(uint32_t *)buffer;
+                if (blink || word_this != word_last || reporter->dots != dots_last) {
+                    word_last = word_this;
+                    openvfd_write_report(word_this, reporter->dots, blink);
                     pr_debug("Reporting type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
                 }
                 if (reporter->duration_second &&  --remaining_second == 0) {
                     break;
                 }
             }
+            dots_last = reporter->dots;
         }
     }
 }
