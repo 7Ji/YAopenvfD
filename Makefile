@@ -16,7 +16,7 @@ ifeq ($(STATIC), 1)
 	LDFLAGS += -static
 endif
 
-INCLUDES = $(wildcard $(DIR_INCLUDE)/*.h) $(wildcard $(DIR_INCLUDE)/openvfd/*.h)
+INCLUDES = $(wildcard $(DIR_INCLUDE)/*.h) $(wildcard $(DIR_INCLUDE)/glyphs/*.h) $(wildcard $(DIR_INCLUDE)/glyphs/char/*.h)
 
 # OBJECTS_COMMON := main glyphs
 # OBJECTS_DAEMON_ONLY := cli collector openvfd util
