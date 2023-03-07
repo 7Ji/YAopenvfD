@@ -143,16 +143,25 @@ int reporter_loop(struct reporter *reporter_head) {
             unsigned remaining_second = reporter->duration_second;
             bool blink = reporter->type == REPORTER_TYPE_DATE && reporter->collector.date->blink;
             bool dots_update = reporter->dots != dots_last;
-            collector_prepare(reporter->collector);
+            if (collector_prepare(reporter->collector)) {
+                pr_error("Failed to prepare collector\n");
+                return 1;
+            }
             while (true) {
                 sleep(1);
                 char buffer[5];
-                collector_report(reporter->collector, buffer);
+                if (collector_report(reporter->collector, buffer)) {
+                    pr_error("Failed to collect report\n");
+                    return 2;
+                }
                 uint32_t word_this = *(uint32_t *)buffer;
                 if (blink || word_this != word_last || dots_update) {
                     dots_update = false;
                     word_last = word_this;
-                    openvfd_write_report(word_this, reporter->dots, blink);
+                    if (openvfd_write_report(word_this, reporter->dots, blink)) {
+                        pr_error("Failed to write report to OpenVFD dev\n");
+                        return 3;
+                    }
                     pr_debug("Reporting type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
                 } else {
                     pr_debug("Omitted report type %s, remaining %u secons, report content: %s, since nothing changed\n", reporter_get_type_string(reporter->type), remaining_second, buffer);

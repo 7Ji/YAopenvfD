@@ -86,7 +86,7 @@ uint8_t openvfd_lookup_dots(enum dots_type const type) {
     return dots_lookup_table[openvfd_dots_lookup_id][type];
 }
 
-void openvfd_write_report(uint32_t word, uint8_t dots, bool const blink) {
+int openvfd_write_report(uint32_t word, uint8_t dots, bool const blink) {
     struct openvfd_write_sequence sequence = {0};
     char report[4];
     *((uint32_t *)report) = word;
@@ -124,5 +124,9 @@ void openvfd_write_report(uint32_t word, uint8_t dots, bool const blink) {
             report[1], report[1], expand_bit_sequance(sequence.char_2),
             report[2], report[2], expand_bit_sequance(sequence.char_3),
             report[3], report[3], expand_bit_sequance(sequence.char_4));
-    write(openvfd_fd, &sequence, sizeof sequence);
+    if (write(openvfd_fd, &sequence, sizeof sequence) < 0) {
+        pr_error_with_errno("Failed to write to openvfd dev");
+        return 1;
+    }
+    return 0;
 }
