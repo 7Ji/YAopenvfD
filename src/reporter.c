@@ -2,6 +2,8 @@
 #include "openvfd.h"
 
 #define REPORTER_TYPE_MAX REPORTER_TYPE_NET
+#define REPORTER_PARSE_ARGUMENT_MAX_LEN 128
+#define REPORTER_PARSE_ARGUMENT_MAX_SEP 3
 
 static const char reporter_type_strings[][7] = {
     "",
@@ -29,9 +31,6 @@ enum reporter_type reporter_get_type_from_string(char const *const string) {
     }
     return REPORTER_TYPE_NONE;
 }
-
-#define REPORTER_PARSE_ARGUMENT_MAX_LEN 128
-#define REPORTER_PARSE_ARGUMENT_MAX_SEP 3
 
 static inline size_t reporter_parse_argument_safe_len(size_t len) {
     if (len > REPORTER_PARSE_ARGUMENT_MAX_LEN - 1) {
