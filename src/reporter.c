@@ -7,7 +7,9 @@ static const char reporter_type_strings[][7] = {
     "temp",
     "io",
     "cpu",
-    "net"
+    "net",
+    "time",
+    "date"
 };
 
 char const *reporter_get_type_string(enum reporter_type const type) {
@@ -133,6 +135,12 @@ struct reporter *reporter_parse_argument(char const *const arg) {
         break;
     case REPORTER_TYPE_NET:
         collector.type = COLLECTOR_TYPE_NET;
+        break;
+    case REPORTER_TYPE_TIME:
+        collector.type = COLLECTOR_TYPE_TIME;
+        break;
+    case REPORTER_TYPE_DATE:
+        collector.type = COLLECTOR_TYPE_DATE;
         break;
     default:
         pr_error("Argument does not define valid reporter type: '%s'\n", arg);

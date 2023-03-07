@@ -18,15 +18,9 @@ endif
 
 INCLUDES = $(wildcard $(DIR_INCLUDE)/*.h) $(wildcard $(DIR_INCLUDE)/glyphs/*.h) $(wildcard $(DIR_INCLUDE)/glyphs/char/*.h)
 
-# OBJECTS_COMMON := main glyphs
-# OBJECTS_DAEMON_ONLY := cli collector openvfd util
-
-# OBJECTS_DAEMON := $(patsubst %,$(DIR_OBJECT)/%.daemon.o,$(OBJECTS_COMMON) $(OBJECTS_DAEMON_ONLY))
-
-# OBJECTS_GLYPHS_TEST := $(patsubst %,$(DIR_OBJECT)/%.glyph_test.o,$(OBJECTS_COMMON))
-
-_OBJECTS = $(wildcard $(DIR_SOURCE)/*.c)
-OBJECTS = $(patsubst $(DIR_SOURCE)/%.c,$(DIR_OBJECT)/%.o,$(_OBJECTS))
+_OBJECTS_COMMON = $(wildcard $(DIR_SOURCE)/*.c)
+_OBJECTS_COLLECTOR = $(wildcard $(DIR_SOURCE)/collector/*.c)
+OBJECTS = $(patsubst $(DIR_SOURCE)/%.c,$(DIR_OBJECT)/%.o,$(_OBJECTS_COMMON)) $(patsubst $(DIR_SOURCE)/collector/%.c,$(DIR_OBJECT)/collector_%.o,$(_OBJECTS_COLLECTOR))
 
 ifndef VERSION
 	VERSION_GIT_TAG := $(shell git describe --abbrev=0 --tags ${TAG_COMMIT} 2>/dev/null || true)
@@ -65,6 +59,9 @@ $(DIR_OBJECT)/version.o: $(DIR_SOURCE)/version.c $(INCLUDES) version | prepare
 
 $(DIR_OBJECT)/main.o: $(DIR_SOURCE)/main.c $(INCLUDES) | prepare
 	$(CC) -c -o $@ $< $(CFLAGS) -DBINARY=YAopenvfD
+
+$(DIR_OBJECT)/collector_%.o: $(DIR_SOURCE)/collector/%.c $(INCLUDES) | prepare
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(DIR_OBJECT)/%.o: $(DIR_SOURCE)/%.c $(INCLUDES) | prepare
 	$(CC) -c -o $@ $< $(CFLAGS)

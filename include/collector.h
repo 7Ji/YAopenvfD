@@ -19,7 +19,9 @@ enum collector_type {
     COLLECTOR_TYPE_TEMP,
     COLLECTOR_TYPE_IO,
     COLLECTOR_TYPE_CPU,
-    COLLECTOR_TYPE_NET
+    COLLECTOR_TYPE_NET,
+    COLLECTOR_TYPE_TIME,
+    COLLECTOR_TYPE_DATE
 };
 
 struct collector_string {
