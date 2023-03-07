@@ -3,6 +3,7 @@
 #include "common.h"
 #include "collector.h"
 #include "dots.h"
+#include "watcher.h"
 
 enum reporter_type {
     REPORTER_TYPE_NONE,
@@ -25,5 +26,5 @@ struct reporter {
 
 struct reporter *reporter_parse_argument(char const *arg);
 int reporter_prepare(struct reporter *reporter_head);
-int reporter_loop(struct reporter *reporter_head);
+int reporter_loop(struct reporter *reporter_head, struct watcher *watcher_head);
 #endif

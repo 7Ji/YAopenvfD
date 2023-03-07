@@ -118,11 +118,6 @@ struct reporter *reporter_parse_argument(char const *const arg) {
 }
 
 int reporter_prepare(struct reporter *const reporter_head) {
-    int r = openvfd_prepare();
-    if (r) {
-        pr_error("Failed to prepare OpenVFD: %d\n", r);
-        return 1;
-    }
     for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
         if (collector_init(reporter->collector)) {
             pr_error("Failed to init collector for reporter type %d(%s) duration %u\n", reporter->type, reporter_get_type_string(reporter->type), reporter->duration_second);
@@ -135,14 +130,13 @@ int reporter_prepare(struct reporter *const reporter_head) {
     return 0;
 }
 
-int reporter_loop(struct reporter *reporter_head) {
+int reporter_loop(struct reporter *const reporter_head, struct watcher *const watcher_head) {
     uint32_t word_last = 0;
     uint8_t dots_last = 0;
     while (true) {
         for (struct reporter *reporter = reporter_head; reporter; reporter = reporter->next) {
             unsigned remaining_second = reporter->duration_second;
             bool blink = reporter->type == REPORTER_TYPE_DATE && reporter->collector.date->blink;
-            bool dots_update = reporter->dots != dots_last;
             if (collector_prepare(reporter->collector)) {
                 pr_error("Failed to prepare collector\n");
                 return 1;
@@ -154,13 +148,19 @@ int reporter_loop(struct reporter *reporter_head) {
                     pr_error("Failed to collect report\n");
                     return 2;
                 }
+                uint8_t dots_this = 0;
+                if (watcher_head && watcher_check_all(watcher_head, &dots_this)) {
+                    pr_error("Failed to get check results of all wachers\n");
+                    return 3;
+                }
+                dots_this |= reporter->dots;
                 uint32_t word_this = *(uint32_t *)buffer;
-                if (blink || word_this != word_last || dots_update) {
-                    dots_update = false;
+                if (blink || word_this != word_last || dots_this != dots_last) {
                     word_last = word_this;
+                    dots_last = dots_this;
                     if (openvfd_write_report(word_this, reporter->dots, blink)) {
                         pr_error("Failed to write report to OpenVFD dev\n");
-                        return 3;
+                        return 4;
                     }
                     pr_debug("Reported type %s, remaining %u seconds, report content: %s\n", reporter_get_type_string(reporter->type), remaining_second, buffer);
                 } else {

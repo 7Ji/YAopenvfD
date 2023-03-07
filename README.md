@@ -49,7 +49,7 @@ Most of the new report features are added to make it more headless-server-target
    - Display the mixed Tx/Rx speed on network interface `end0` keep the led dot for `eth` on (for easier identification between I/O and net), for 5 seconds
    - Display the static text `HK1` for 3 seconds
     ```
-    ./YAopenvfD 1:date:year 1:date:month+day 1:date:weekday 10@alarm:date:24h 3:date:12h 3:temp:0 3:cpu 5@usb:io:mmcblk2:m 5@eth:net:end0:m 3:string:'HK1'
+    ./YAopenvfD 1:date:year 1:date:month_day 1:date:weekday 10@alarm:date:24h 3:date:12h 3:temp:0 3:cpu 5@usb:io:mmcblk2:m 5@eth:net:end0:m 3:string:'HK1'
     ```
 
 

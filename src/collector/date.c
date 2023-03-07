@@ -8,10 +8,10 @@ static const char collector_date_type_strings[][11] = {
     "24h",
     "12h",
     "year",
-    "year+month",
-    "month+year",
-    "month+day",
-    "day+month",
+    "year_month",
+    "month_year",
+    "month_day",
+    "day_month",
     "weekday"
 };
 
