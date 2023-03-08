@@ -201,13 +201,23 @@ int watcher_check_file(struct watcher *const watcher, uint8_t *dots) {
 int watcher_check_net_carrier(struct watcher *const watcher, uint8_t *dots) {
     char buffer[16];
     if (lseek(watcher->net_carrier->carrier_fd, 0, SEEK_SET) < 0) {
-        pr_error_with_errno("Failed to seek to head of carrier stat file for interface '%s'\n", watcher->net_carrier->interface);
+        pr_error_with_errno("Failed to seek to head of carrier stat file for interface '%s'", watcher->net_carrier->interface);
         return 1;
     }
     buffer[0] = '\0';
     if (read(watcher->net_carrier->carrier_fd, buffer, sizeof buffer) < 0) {
-        pr_error_with_errno("Failed to read from carrier stat file for interface '%s'\n", watcher->net_carrier->interface);
-        return 2;
+        pr_error_with_errno("Failed to read from carrier stat file for interface '%s'", watcher->net_carrier->interface);
+        if (errno == EINVAL) {
+            pr_warn("Trying to re-open carrier fd for interface '%s'\n", watcher->net_carrier->interface);
+            close(watcher->net_carrier->carrier_fd);
+            if (watcher_init_net_carrier(watcher)) {
+                pr_error("Failed to re-open carrier stat for interface '%s'\n", watcher->net_carrier->interface);
+                return 2;
+            }
+        } else {
+            pr_error("Unsolvable error, give up\n");
+            return 3;
+        }
     }
     if (buffer[0] == '1') {
         *dots |= watcher->dots_mask;
