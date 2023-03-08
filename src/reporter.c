@@ -181,7 +181,6 @@ int reporter_loop(struct reporter *const reporter_head, struct watcher *const wa
                     break;
                 }
             }
-            dots_last = reporter->dots;
         }
     }
 }
