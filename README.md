@@ -87,7 +87,7 @@ YAopenvfD [reporter] ([reporter] ([reporter] (...))) [watcher] ([watcher] ([watc
     ```
  - A more complext one that does not involve LED dots:
     ```
-    ./YAopenvfD 5:temp:0 3:string:-a- 5:time:24 5:time:12 3:string:mvm
+    ./YAopenvfD 5:temp:0 3:string:-a- 5:date:24h 5:date:12h 3:string:mvm
     ```
     This loops endlessly as follows:
     - Display the temperature for thermal zone 0 for 5 seconds
