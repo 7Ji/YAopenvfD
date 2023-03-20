@@ -33,7 +33,7 @@ static inline void cli_help() {
         "      cpu: \tdisplay whole CPU load, or optionally for a specific core no. in definer (0 to 3 for a 4-core CPU) if valid\n"
         "      net: \tdisplay a type of network TX/RX on a specific interface\n"
         "\t[net definer]:\t[interface]:[type]\n"
-        "\t  [interface]:\tthe name of block device, e.g. mmcblk2\n"
+        "\t  [interface]:\tthe name of network interface, e.g. eth0, wlan0, etc\n"
         "\t  [type]:\tt or T (for Tx/transmit), r or R (for Rx/receive)\n"
         "      date: \tdisplay date/time in one of the following formats as defined in definer:\n"
         "\t24h:\ttime in hh:mm style, 24h (e.g. 12:34), with blinking colon\n"
