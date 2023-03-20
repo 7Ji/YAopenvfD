@@ -96,6 +96,7 @@ static inline void openvfd_clean_write_sequance(struct openvfd_write_sequence *c
 int openvfd_prepare() {
     if ((openvfd_fd = open(OPENVFD_DEV, O_RDWR)) < 0) {
         pr_error_with_errno("Failed to open '"OPENVFD_DEV"' for I/O operation");
+        pr_error("Is OpenVFD kernel module loaded? This project (YAopenvfD) is only a daemon and must be used in combination with the OpenVFD kernel module.\n");
         return 1;
     }
     struct openvfd_display display = {0};
