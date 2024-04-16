@@ -33,18 +33,7 @@ _OBJECTS_COLLECTOR = $(wildcard $(DIR_SOURCE)/collector/*.c)
 OBJECTS = $(patsubst $(DIR_SOURCE)/%.c,$(DIR_OBJECT)/%.o,$(_OBJECTS_COMMON)) $(patsubst $(DIR_SOURCE)/collector/%.c,$(DIR_OBJECT)/collector_%.o,$(_OBJECTS_COLLECTOR))
 
 ifndef VERSION
-	VERSION_GIT_TAG := $(shell git describe --abbrev=0 --tags ${TAG_COMMIT} 2>/dev/null || true)
-	VERSION_GIT_TAG_NO_V := $(VERSION_GIT_TAG:v%=%)
-	VERSION_GIT_COMMIT := $(shell git rev-list --abbrev-commit --tags --max-count=1)
-	VERSION_GIT_DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
-	VERSION := $(VERSION_GIT_TAG_NO_V)-$(VERSION_GIT_COMMIT)-$(VERSION_GIT_DATE)
-	GIT_STAT := $(shell git diff --stat)
-	ifeq ($(VERSION),--)
-		VERSION := unknown
-	endif
-	ifneq ($(GIT_STAT),)
-		VERSION := $(VERSION)-DIRTY
-	endif
+	VERSION:=$(shell bash scripts/version.sh)
 endif
 
 ifneq ($(BINARY), $(BINARY_GLYPH_TEST))
