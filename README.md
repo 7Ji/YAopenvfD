@@ -11,11 +11,45 @@ You should have received a copy of the GNU General Public License along with thi
 
 # **Y**et **A**nother **openvf**d **D**aemon
 
-An alternative to `OpenVFDService`, which is provided as the official service daemon in the [linux_openvfd] project.
+An alternative daemon, replacing `OpenVFDService` which is provided as the official service daemon in the [linux_openvfd] project.
 
 This project is aimed at providing distro-independent single-binary feature-equivalent experience to the official `OpenVFDService` + `service.openvfd` Kodi addon combination. 
 
 Most of the new report features are added to make it more headless-server-targeted than media-center-targeted.
+
+## Kernel dependency
+This is only a userspace daemon, it depends on `openvfd` kernel module (available [here][linux_openvfd]) to provide `/dev/openvfd` to operate on, and an existing `openvfd` node in your tree. 
+
+Currently it seems all flippy's and ophub's kernels come with this module built in tree, and corresponding node existing, e.g. [linux-aarch64-flippy-git](https://github.com/7Ji-PKGBUILDs/linux-aarch64-flippy-git). My kernel package [linux-aarch64-7ji](https://github.com/7Ji-PKGBUILDs/linux-aarch64-7ji) only has the openvfd module built as a module, but does not have `openvfd` node implanted in tree.
+
+To verify if `openvfd` is availabel as a module for your current kernel:
+```
+modinfo openvfd
+```
+
+To verify if `openvfd` node existing in your DTB, check if the following path exists:
+```
+ls /proc/device-tree/openvfd
+```
+If you're using a kernel with `openvfd` built as a module, but without the `openvfd` node, you can still use this, by applying `meson-enable-openvfd.dtbo` overlay from my [device trees collection](https://github.com/7Ji/device-trees), the following is an example modified `extlinux.conf`:
+```
+MENU TITLE Select the boot target
+TIMEOUT 10
+DEFAULT alarm-7ji
+  LABEL  alarm-flippy
+  LINUX  /boot/vmlinuz-linux-aarch64-flippy
+  INITRD /boot/booster-linux-aarch64-flippy.img
+  FDTDIR /boot/dtbs/linux-aarch64-flippy
+  APPEND root=UUID=9ad19ba4-1c29-4e5c-a82c-fbce457e7442 rootflags=compress=zstd:3,subvol=@ rw ignore_loglevel
+
+  LABEL  alarm-7ji
+  LINUX  /boot/vmlinuz-linux-aarch64-7ji
+  INITRD /boot/booster-linux-aarch64-7ji.img
+  FDTDIR /boot/dtbs/linux-aarch64-7ji
+  FDTOVERLAYS /boot/dtbs/overlay/meson-enable-openvfd.dtbo
+  APPEND root=UUID=9ad19ba4-1c29-4e5c-a82c-fbce457e7442 rootflags=compress=zstd:3,subvol=@ rw console=ttyAML0,115200n8 ignore_loglevel
+```
+(Note both kernels come with the module built, but only `flippy` kernel's DTB comes with the node, so an overlay is needed for `7ji` kernel)
 
 ## Usage
 Jump to [Example](#example) for some quick examples
@@ -147,6 +181,8 @@ You can download release build on [release page](../../releases)
 
 You can also download staticly linked binaries automatically built on each push, just click the green `√` the top middle of this page. **These are development builds and there might be dangerous**
 
+An official AUR package [YAopenvfD](https://aur.archlinux.org/packages/yaopenvfd) is also available to install with your favorite AUR helper on Arch Linux, prebuilt binary packages for x86_64 and aarch64 are also also available from my [archrepo](https://github.com/7Ji/archrepo)
+
 ## Build
 Just clone and repo run `make`
  1. Clone the repo
@@ -161,6 +197,51 @@ Just clone and repo run `make`
     ```
     make
     ```
+
+## Install
+To install to a psuedo root (useful for a build system):
+```
+make DESTDIR=some/target/root install
+```
+To install to your current root:
+```
+sudo make install
+```
+
+## Systemd integration
+If you use the official AUR package, or install manually by `sudo make install`, you would install some pre-configured systemd units to your root, use them as follows:
+- Configure module parameters in `/etc/conf.d/YAopenvfD`, e.g.
+  ```
+  vfd_gpio_clk=0,64,0
+  vfd_gpio_dat=0,63,0
+  vfd_gpio_stb=0,0,0xFF
+  vfd_gpio0=0,0,0xFF
+  vfd_gpio1=0,0,0xFF
+  vfd_gpio2=0,0,0xFF
+  vfd_gpio3=0,0,0xFF
+  vfd_gpio_protocol=0,0
+  vfd_chars=0,4,3,2,1
+  vfd_dot_bits=0,1,3,2,4,5,6
+  vfd_display_type=0x00,0x00,0x00,0x06
+  YAopenvfD_args=--dots-order 0,1,3,2,4,5,6 10@alarm:date:24h 10:date:12h 10@usb:io:mmcblk1:m 10@wifi:net:end0:m 3:cpu 3:temp:0 @eth:net_carrier:end0
+  ```
+- Start `YAopenvfD-updater.service` to check if the configuration works properly:
+  ```
+  sudo systemctl start YAopenvfD-updater.service
+  ```
+- If you would like to debug the module parameters, restart the modloader service:
+  ```
+  sudo systemctl restart YAopenvfD-modloader.service
+  ```
+  _This would also restart the updater service if it's running_
+- If you would like to debug the daemon arguments, restart the updater service:
+  ```
+  sudo systemctl restart YAopenvfD-updater.service
+  ```
+- Enable `YAopenvfD-updater.service` if everything works perfectly to make it auto started on boot:
+  ```
+  sudo systemctl enable YAopenvfD-updater.service
+  ```
 
 ## License
 **YAopenvfD** (**Y**et **A**nother **openvf**d **D**aemon) is licensed under [**GPL3**](https://gnu.org/licenses/gpl.html)
