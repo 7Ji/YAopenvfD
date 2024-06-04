@@ -1,5 +1,5 @@
 # YAopenvfD/Makefile: Helper to make binary
-# Copyright (C) 2023 Guoxin "7Ji" Pu <pugokushin@gmail.com>
+# Copyright (C) 2023-2024 Guoxin "7Ji" Pu <pugokushin@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -40,7 +40,7 @@ ifneq ($(BINARY), $(BINARY_GLYPH_TEST))
 	BINARY := $(BINARY_DAEMON)
 endif
 
-.PHONY: clean prepare version fresh
+.PHONY: clean prepare version fresh install
 # glyph_test: $(BINARY_GLYPH_TEST)
 
 # OBJECTS_DAEMON_ONLY
@@ -68,6 +68,12 @@ $(DIR_OBJECT)/%.o: $(DIR_SOURCE)/%.c $(INCLUDES) | prepare
 version:
 
 fresh: clean $(BINARY_DAEMON)
+
+install: YAopenvfD
+	install -DTm755 "$<" "${DESTDIR}/usr/bin/$<"
+	install -DTm644 systemd/YAopenvfD-modloader.sh "${DESTDIR}/usr/lib/YAopenvfD/modloader.sh"
+	install -DTm644 systemd/YAopenvfD-modloader.service "${DESTDIR}/usr/lib/systemd/system/YAopenvfd-modloader.service"
+	install -DTm644 systemd/YAopenvfD-updater.service "${DESTDIR}/usr/lib/systemd/system/YAopenvfd-updater.service"
 
 clean:
 	rm -rf $(DIR_OBJECT) $(BINARY_DAEMON) $(BINARY_GLYPH_TEST)

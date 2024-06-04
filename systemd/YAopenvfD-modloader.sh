@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /usr/bin/modprobe openvfd "vfd_gpio_clk=${vfd_gpio_clk}" "vfd_gpio_dat=${vfd_gpio_dat}" "vfd_gpio_stb=${vfd_gpio_stb:-0,0,0xFF}" "vfd_gpio0=${vfd_gpio0:-0,0,0xFF}" "vfd_gpio1=${vfd_gpio1:-0,0,0xFF}" "vfd_gpio2=${vfd_gpio2:-0,0,0xFF}" "vfd_gpio3=${vfd_gpio3:-0,0,0xFF}" "vfd_gpio_protocol=${vfd_gpio_protocol:-0,0}" "vfd_chars=${vfd_chars}" "vfd_dot_bits=${vfd_dot_bits}" "vfd_display_type=${vfd_display_type}"

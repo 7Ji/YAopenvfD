@@ -10,10 +10,12 @@ You should have received a copy of the GNU General Public License along with thi
 */
 
 #include "cli.h"
+#include "common.h"
 #include "openvfd.h"
 #include "reporter.h"
 #include "watcher.h"
 #include "version.h"
+#include <unistd.h>
 
 static inline void cli_help() {
     puts(
@@ -140,9 +142,21 @@ int cli_parse(int const argc, char const *const argv[], struct reporter **const 
     }
 }
 
+int cli_unbuffer() {
+    if (isatty(STDOUT_FILENO)) {
+        return 0;
+    }
+    if (setvbuf(stdout, NULL, _IOLBF, 0)) {
+        pr_error_with_errno("Failed to set stdout to line buffered");
+        return 1;
+    }
+    return 0;
+}
+
 int cli_interface(int const argc, char const *const argv[]) {
     struct reporter *reporter_head = NULL;
     struct watcher *watcher_head = NULL;
+    cli_unbuffer();
     int r = cli_parse(argc, argv, &reporter_head, &watcher_head);
     if (r > 0) {
         pr_error("Failed to parse arguments\n");

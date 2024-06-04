@@ -1,0 +1,14 @@
+[Unit]
+Description=Yet Another openvfd Daemon updater
+After=suspend.target YAopenvfD-modloader.service
+Requires=YAopenvfD-modloader.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/conf.d/YAopenvfD
+ExecStart=/usr/bin/YAopenvfD ${YAopenvfD_args}
+Restart=on-failure
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target

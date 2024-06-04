@@ -1,0 +1,10 @@
+[Unit]
+Description=Yet Another openvfd Daemon module loader
+After=suspend.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/conf.d/YAopenvfD
+ExecStart=/bin/bash /usr/lib/YAopenvfD/modloader.sh
+ExecStop=/usr/bin/modprobe -r openvfd
+RemainAfterExit=true
