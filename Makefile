@@ -72,8 +72,8 @@ fresh: clean $(BINARY_DAEMON)
 install: YAopenvfD
 	install -DTm755 "$<" "${DESTDIR}/usr/bin/$<"
 	install -DTm644 systemd/YAopenvfD-modloader.sh "${DESTDIR}/usr/lib/YAopenvfD/modloader.sh"
-	install -DTm644 systemd/YAopenvfD-modloader.service "${DESTDIR}/usr/lib/systemd/system/YAopenvfd-modloader.service"
-	install -DTm644 systemd/YAopenvfD-updater.service "${DESTDIR}/usr/lib/systemd/system/YAopenvfd-updater.service"
+	install -DTm644 systemd/YAopenvfD-modloader.service "${DESTDIR}/usr/lib/systemd/system/YAopenvfD-modloader.service"
+	install -DTm644 systemd/YAopenvfD-updater.service "${DESTDIR}/usr/lib/systemd/system/YAopenvfD-updater.service"
 
 clean:
 	rm -rf $(DIR_OBJECT) $(BINARY_DAEMON) $(BINARY_GLYPH_TEST)
