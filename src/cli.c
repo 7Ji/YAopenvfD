@@ -150,6 +150,10 @@ int cli_unbuffer() {
         pr_error_with_errno("Failed to set stdout to line buffered");
         return 1;
     }
+    if (fflush(stdout)) {
+        pr_error_with_errno("Failed to flush stdout");
+        return 2;
+    }
     return 0;
 }
 
